@@ -1,0 +1,9 @@
+{
+    "signals": [
+        "INSTRUCTIONS.PUSH",
+        "INSTRUCTIONS.POP",
+        "INSTRUCTIONS.CALL",
+        "INSTRUCTIONS.RET",
+        "INSTRUCTIONS.RTI"
+    ]
+}
