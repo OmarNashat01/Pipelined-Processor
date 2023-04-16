@@ -1,0 +1,285 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+dD:/ProgramSetup/intelFPGA/18.1
+Edecoder
+Z0 w1677745146
+Z1 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z2 DPx4 ieee 14 std_logic_1164 0 22 eNV`TJ_GofJTzYa?f<@Oe1
+Z3 dD:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3
+Z4 8D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/decoder.vhd
+Z5 FD:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/decoder.vhd
+l0
+L6
+V;bJ<Oh?PXa6<UP]Vem53F3
+!s100 UR;`I@:IViHL?eDNloCkg1
+Z6 OV;C;10.5b;63
+33
+Z7 !s110 1678310682
+!i10b 1
+Z8 !s108 1678310682.000000
+Z9 !s90 -reportprogress|300|-work|work|-2008|-explicit|-stats=none|D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/decoder.vhd|
+Z10 !s107 D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/decoder.vhd|
+!i113 1
+Z11 o-work work -2008 -explicit
+Z12 tExplicit 1 NoCoverage 1 CvgOpt 0
+Aa_decoder
+R1
+R2
+DEx4 work 7 decoder 0 22 ;bJ<Oh?PXa6<UP]Vem53F3
+l15
+L14
+VnZNcg1TPZG_4C@RSa?kh`2
+!s100 T5?3Ehfn^HeZU[>?08l`[0
+R6
+33
+R7
+!i10b 1
+R8
+R9
+R10
+!i113 1
+R11
+R12
+Endff
+Z13 w1677745022
+R1
+R2
+R3
+Z14 8D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/nDFF.vhd
+Z15 FD:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/nDFF.vhd
+l0
+L6
+VUH]A`SWLD2N4^Vc6GchJl1
+!s100 o0PnD[Bg`]kJUDP8cl=102
+R6
+33
+R7
+!i10b 1
+R8
+Z16 !s90 -reportprogress|300|-work|work|-2008|-explicit|-stats=none|D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/nDFF.vhd|
+Z17 !s107 D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/nDFF.vhd|
+!i113 1
+R11
+R12
+Aa_ndff
+R1
+R2
+DEx4 work 4 ndff 0 22 UH]A`SWLD2N4^Vc6GchJl1
+l13
+L12
+VF0mZK_G`YV48dM9Jeh`0g2
+!s100 `CI_IM>YH>m8`o;BTJc;o3
+R6
+33
+R7
+!i10b 1
+R8
+R16
+R17
+!i113 1
+R11
+R12
+Eram
+Z18 w1678311149
+Z19 DPx4 ieee 11 numeric_std 0 22 :ASDNFgHXf_ih3J@9F3Ze1
+R1
+R2
+R3
+Z20 8D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/ram.vhd
+Z21 FD:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/ram.vhd
+l0
+L4
+V5QOgDR_BbR9X;heZ=OXGE3
+!s100 m=cP><_@FPRIHTF0Ug1:20
+R6
+33
+Z22 !s110 1678311151
+!i10b 1
+Z23 !s108 1678311151.000000
+Z24 !s90 -reportprogress|300|-work|work|-2008|-explicit|-stats=none|D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/ram.vhd|
+Z25 !s107 D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/ram.vhd|
+!i113 1
+R11
+R12
+Async_ram_a
+R19
+R1
+R2
+Z26 DEx4 work 3 ram 0 22 5QOgDR_BbR9X;heZ=OXGE3
+l17
+L14
+Vm>dmn4EFW5K^RP>=Od=^70
+!s100 VIPf^ZfIg9G@n`9k<Kn5L1
+R6
+33
+R22
+!i10b 1
+R23
+R24
+R25
+!i113 1
+R11
+R12
+Eregister_file
+Z27 w1677745352
+R1
+R2
+R3
+Z28 8D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/register_file.vhd
+Z29 FD:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/register_file.vhd
+l0
+L6
+VHnF7=MhK2l2zMLA>K_MVC3
+!s100 aY=oT0JOXB]8PdSF`XQQ02
+R6
+33
+Z30 !s110 1678310683
+!i10b 1
+Z31 !s108 1678310683.000000
+Z32 !s90 -reportprogress|300|-work|work|-2008|-explicit|-stats=none|D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/register_file.vhd|
+Z33 !s107 D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/register_file.vhd|
+!i113 1
+R11
+R12
+Aa_reg
+R1
+R2
+DEx4 work 13 register_file 0 22 HnF7=MhK2l2zMLA>K_MVC3
+l32
+L16
+V;f<W<OAnC70cLjVoJ1?KS3
+!s100 29lOHSgAN1dWJW6^6JO=P1
+R6
+33
+R30
+!i10b 1
+R31
+R32
+R33
+!i113 1
+R11
+R12
+Eregister_file_mem
+Z34 w1678309481
+R1
+R2
+R3
+Z35 8D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/register_file_mem.vhd
+Z36 FD:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/register_file_mem.vhd
+l0
+L6
+VBZ0F^gAi;>Z][ME=YNc?>1
+!s100 3WicYDck_BR?zbESI31Tl1
+R6
+33
+R30
+!i10b 1
+R31
+Z37 !s90 -reportprogress|300|-work|work|-2008|-explicit|-stats=none|D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/register_file_mem.vhd|
+Z38 !s107 D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/register_file_mem.vhd|
+!i113 1
+R11
+R12
+Amem_reg
+R1
+R2
+DEx4 work 17 register_file_mem 0 22 BZ0F^gAi;>Z][ME=YNc?>1
+l26
+L16
+VUHT0Y^ilYjDVAE?ijH8G90
+!s100 8@C?FEHTfLk@EzHoQW2fW3
+R6
+33
+R30
+!i10b 1
+R31
+R37
+R38
+!i113 1
+R11
+R12
+Etb_register_file
+Z39 w1678307710
+R1
+R2
+R3
+Z40 8D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/tb_register_file.vhd
+Z41 FD:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/tb_register_file.vhd
+l0
+L5
+V7Wg8;nUg6cKNQ64E78:>Q0
+!s100 _hUzmzGgW9]W6eSGWRGXB0
+R6
+33
+R30
+!i10b 1
+R31
+Z42 !s90 -reportprogress|300|-work|work|-2008|-explicit|-stats=none|D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/tb_register_file.vhd|
+Z43 !s107 D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/tb_register_file.vhd|
+!i113 1
+R11
+R12
+Atestingregisterfile
+R1
+R2
+DEx4 work 16 tb_register_file 0 22 7Wg8;nUg6cKNQ64E78:>Q0
+l28
+L8
+VC2FR^7C4Y@QAJ1=^@R_523
+!s100 bJ=@X<LUl?3`U:;XH`Mhz1
+R6
+33
+R30
+!i10b 1
+R31
+R42
+R43
+!i113 1
+R11
+R12
+Etb_register_file_mem
+Z44 w1678310307
+R1
+R2
+R3
+Z45 8D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/tb_register_file_mem.vhd
+Z46 FD:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/tb_register_file_mem.vhd
+l0
+L5
+VehYUi3>@^KK7OzRghfM900
+!s100 mg0`KlbmfdV5NYI8Va7Gm1
+R6
+33
+R30
+!i10b 1
+R31
+Z47 !s90 -reportprogress|300|-work|work|-2008|-explicit|-stats=none|D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/tb_register_file_mem.vhd|
+Z48 !s107 D:/Senior 1 (Spring)/Computer Architecture/Lab Solutions/Lab3/tb_register_file_mem.vhd|
+!i113 1
+R11
+R12
+Atestingregisterfile
+R1
+R2
+DEx4 work 20 tb_register_file_mem 0 22 ehYUi3>@^KK7OzRghfM900
+l28
+L8
+VKHR6HOahX=oYVIEY1GSO41
+!s100 PXT;bTJJKPCYQgVzgaEN80
+R6
+33
+R30
+!i10b 1
+R31
+R47
+R48
+!i113 1
+R11
+R12

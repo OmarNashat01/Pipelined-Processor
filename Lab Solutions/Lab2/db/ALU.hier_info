@@ -1,0 +1,478 @@
+|partA
+A[0] => nbit_adder:Z1.A[0]
+A[1] => nbit_adder:Z1.A[1]
+A[2] => nbit_adder:Z1.A[2]
+A[3] => nbit_adder:Z1.A[3]
+A[4] => nbit_adder:Z1.A[4]
+A[5] => nbit_adder:Z1.A[5]
+A[6] => nbit_adder:Z1.A[6]
+A[7] => nbit_adder:Z1.A[7]
+A[8] => nbit_adder:Z1.A[8]
+A[9] => nbit_adder:Z1.A[9]
+B[0] => Mux9.IN3
+B[0] => F.DATAB
+B[0] => Mux9.IN2
+B[1] => Mux8.IN3
+B[1] => F.DATAB
+B[1] => Mux8.IN2
+B[2] => Mux7.IN3
+B[2] => F.DATAB
+B[2] => Mux7.IN2
+B[3] => Mux6.IN3
+B[3] => F.DATAB
+B[3] => Mux6.IN2
+B[4] => Mux5.IN3
+B[4] => F.DATAB
+B[4] => Mux5.IN2
+B[5] => Mux4.IN3
+B[5] => F.DATAB
+B[5] => Mux4.IN2
+B[6] => Mux3.IN3
+B[6] => F.DATAB
+B[6] => Mux3.IN2
+B[7] => Mux2.IN3
+B[7] => F.DATAB
+B[7] => Mux2.IN2
+B[8] => Mux1.IN3
+B[8] => F.DATAB
+B[8] => Mux1.IN2
+B[9] => Mux0.IN3
+B[9] => F.DATAB
+B[9] => Mux0.IN2
+F[0] <= F.DB_MAX_OUTPUT_PORT_TYPE
+F[1] <= F.DB_MAX_OUTPUT_PORT_TYPE
+F[2] <= F.DB_MAX_OUTPUT_PORT_TYPE
+F[3] <= F.DB_MAX_OUTPUT_PORT_TYPE
+F[4] <= F.DB_MAX_OUTPUT_PORT_TYPE
+F[5] <= F.DB_MAX_OUTPUT_PORT_TYPE
+F[6] <= F.DB_MAX_OUTPUT_PORT_TYPE
+F[7] <= F.DB_MAX_OUTPUT_PORT_TYPE
+F[8] <= F.DB_MAX_OUTPUT_PORT_TYPE
+F[9] <= F.DB_MAX_OUTPUT_PORT_TYPE
+S[0] => Mux0.IN5
+S[0] => Mux1.IN5
+S[0] => Mux2.IN5
+S[0] => Mux3.IN5
+S[0] => Mux4.IN5
+S[0] => Mux5.IN5
+S[0] => Mux6.IN5
+S[0] => Mux7.IN5
+S[0] => Mux8.IN5
+S[0] => Mux9.IN5
+S[0] => Equal0.IN1
+S[1] => Mux0.IN4
+S[1] => Mux1.IN4
+S[1] => Mux2.IN4
+S[1] => Mux3.IN4
+S[1] => Mux4.IN4
+S[1] => Mux5.IN4
+S[1] => Mux6.IN4
+S[1] => Mux7.IN4
+S[1] => Mux8.IN4
+S[1] => Mux9.IN4
+S[1] => Equal0.IN0
+Cin => F.IN1
+Cin => nbit_adder:Z1.Cin
+Cout <= Cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1
+A[0] => my_nadder:U1.a[0]
+A[1] => my_nadder:U1.a[1]
+A[2] => select_adder:loop1:1:UX.a[0]
+A[3] => select_adder:loop1:1:UX.a[1]
+A[4] => select_adder:loop1:2:UX.a[0]
+A[5] => select_adder:loop1:2:UX.a[1]
+A[6] => select_adder:loop1:3:UX.a[0]
+A[7] => select_adder:loop1:3:UX.a[1]
+A[8] => select_adder:loop1:4:UX.a[0]
+A[9] => select_adder:loop1:4:UX.a[1]
+B[0] => my_nadder:U1.b[0]
+B[1] => my_nadder:U1.b[1]
+B[2] => select_adder:loop1:1:UX.b[0]
+B[3] => select_adder:loop1:1:UX.b[1]
+B[4] => select_adder:loop1:2:UX.b[0]
+B[5] => select_adder:loop1:2:UX.b[1]
+B[6] => select_adder:loop1:3:UX.b[0]
+B[7] => select_adder:loop1:3:UX.b[1]
+B[8] => select_adder:loop1:4:UX.b[0]
+B[9] => select_adder:loop1:4:UX.b[1]
+F[0] <= my_nadder:U1.s[0]
+F[1] <= my_nadder:U1.s[1]
+F[2] <= select_adder:loop1:1:UX.s[0]
+F[3] <= select_adder:loop1:1:UX.s[1]
+F[4] <= select_adder:loop1:2:UX.s[0]
+F[5] <= select_adder:loop1:2:UX.s[1]
+F[6] <= select_adder:loop1:3:UX.s[0]
+F[7] <= select_adder:loop1:3:UX.s[1]
+F[8] <= select_adder:loop1:4:UX.s[0]
+F[9] <= select_adder:loop1:4:UX.s[1]
+Cin => my_nadder:U1.cin
+Cout <= select_adder:loop1:4:UX.cout
+
+
+|partA|nbit_adder:Z1|my_nadder:U1
+a[0] => my_adder:loop1:0:fx.a
+a[1] => my_adder:loop1:1:fx.a
+b[0] => my_adder:loop1:0:fx.b
+b[1] => my_adder:loop1:1:fx.b
+cin => my_adder:loop1:0:fx.cin
+s[0] <= my_adder:loop1:0:fx.s
+s[1] <= my_adder:loop1:1:fx.s
+cout <= my_adder:loop1:1:fx.cout
+
+
+|partA|nbit_adder:Z1|my_nadder:U1|my_adder:\loop1:0:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|my_nadder:U1|my_adder:\loop1:1:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:1:UX
+a[0] => my_nadder:f0.a[0]
+a[0] => my_nadder:f1.a[0]
+a[1] => my_nadder:f0.a[1]
+a[1] => my_nadder:f1.a[1]
+b[0] => my_nadder:f0.b[0]
+b[0] => my_nadder:f1.b[0]
+b[1] => my_nadder:f0.b[1]
+b[1] => my_nadder:f1.b[1]
+cin => s.OUTPUTSELECT
+cin => s.OUTPUTSELECT
+cin => cout.OUTPUTSELECT
+s[0] <= s.DB_MAX_OUTPUT_PORT_TYPE
+s[1] <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:1:UX|my_nadder:f0
+a[0] => my_adder:loop1:0:fx.a
+a[1] => my_adder:loop1:1:fx.a
+b[0] => my_adder:loop1:0:fx.b
+b[1] => my_adder:loop1:1:fx.b
+cin => my_adder:loop1:0:fx.cin
+s[0] <= my_adder:loop1:0:fx.s
+s[1] <= my_adder:loop1:1:fx.s
+cout <= my_adder:loop1:1:fx.cout
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:1:UX|my_nadder:f0|my_adder:\loop1:0:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:1:UX|my_nadder:f0|my_adder:\loop1:1:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:1:UX|my_nadder:f1
+a[0] => my_adder:loop1:0:fx.a
+a[1] => my_adder:loop1:1:fx.a
+b[0] => my_adder:loop1:0:fx.b
+b[1] => my_adder:loop1:1:fx.b
+cin => my_adder:loop1:0:fx.cin
+s[0] <= my_adder:loop1:0:fx.s
+s[1] <= my_adder:loop1:1:fx.s
+cout <= my_adder:loop1:1:fx.cout
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:1:UX|my_nadder:f1|my_adder:\loop1:0:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:1:UX|my_nadder:f1|my_adder:\loop1:1:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:2:UX
+a[0] => my_nadder:f0.a[0]
+a[0] => my_nadder:f1.a[0]
+a[1] => my_nadder:f0.a[1]
+a[1] => my_nadder:f1.a[1]
+b[0] => my_nadder:f0.b[0]
+b[0] => my_nadder:f1.b[0]
+b[1] => my_nadder:f0.b[1]
+b[1] => my_nadder:f1.b[1]
+cin => s.OUTPUTSELECT
+cin => s.OUTPUTSELECT
+cin => cout.OUTPUTSELECT
+s[0] <= s.DB_MAX_OUTPUT_PORT_TYPE
+s[1] <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:2:UX|my_nadder:f0
+a[0] => my_adder:loop1:0:fx.a
+a[1] => my_adder:loop1:1:fx.a
+b[0] => my_adder:loop1:0:fx.b
+b[1] => my_adder:loop1:1:fx.b
+cin => my_adder:loop1:0:fx.cin
+s[0] <= my_adder:loop1:0:fx.s
+s[1] <= my_adder:loop1:1:fx.s
+cout <= my_adder:loop1:1:fx.cout
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:2:UX|my_nadder:f0|my_adder:\loop1:0:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:2:UX|my_nadder:f0|my_adder:\loop1:1:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:2:UX|my_nadder:f1
+a[0] => my_adder:loop1:0:fx.a
+a[1] => my_adder:loop1:1:fx.a
+b[0] => my_adder:loop1:0:fx.b
+b[1] => my_adder:loop1:1:fx.b
+cin => my_adder:loop1:0:fx.cin
+s[0] <= my_adder:loop1:0:fx.s
+s[1] <= my_adder:loop1:1:fx.s
+cout <= my_adder:loop1:1:fx.cout
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:2:UX|my_nadder:f1|my_adder:\loop1:0:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:2:UX|my_nadder:f1|my_adder:\loop1:1:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:3:UX
+a[0] => my_nadder:f0.a[0]
+a[0] => my_nadder:f1.a[0]
+a[1] => my_nadder:f0.a[1]
+a[1] => my_nadder:f1.a[1]
+b[0] => my_nadder:f0.b[0]
+b[0] => my_nadder:f1.b[0]
+b[1] => my_nadder:f0.b[1]
+b[1] => my_nadder:f1.b[1]
+cin => s.OUTPUTSELECT
+cin => s.OUTPUTSELECT
+cin => cout.OUTPUTSELECT
+s[0] <= s.DB_MAX_OUTPUT_PORT_TYPE
+s[1] <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:3:UX|my_nadder:f0
+a[0] => my_adder:loop1:0:fx.a
+a[1] => my_adder:loop1:1:fx.a
+b[0] => my_adder:loop1:0:fx.b
+b[1] => my_adder:loop1:1:fx.b
+cin => my_adder:loop1:0:fx.cin
+s[0] <= my_adder:loop1:0:fx.s
+s[1] <= my_adder:loop1:1:fx.s
+cout <= my_adder:loop1:1:fx.cout
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:3:UX|my_nadder:f0|my_adder:\loop1:0:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:3:UX|my_nadder:f0|my_adder:\loop1:1:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:3:UX|my_nadder:f1
+a[0] => my_adder:loop1:0:fx.a
+a[1] => my_adder:loop1:1:fx.a
+b[0] => my_adder:loop1:0:fx.b
+b[1] => my_adder:loop1:1:fx.b
+cin => my_adder:loop1:0:fx.cin
+s[0] <= my_adder:loop1:0:fx.s
+s[1] <= my_adder:loop1:1:fx.s
+cout <= my_adder:loop1:1:fx.cout
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:3:UX|my_nadder:f1|my_adder:\loop1:0:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:3:UX|my_nadder:f1|my_adder:\loop1:1:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:4:UX
+a[0] => my_nadder:f0.a[0]
+a[0] => my_nadder:f1.a[0]
+a[1] => my_nadder:f0.a[1]
+a[1] => my_nadder:f1.a[1]
+b[0] => my_nadder:f0.b[0]
+b[0] => my_nadder:f1.b[0]
+b[1] => my_nadder:f0.b[1]
+b[1] => my_nadder:f1.b[1]
+cin => s.OUTPUTSELECT
+cin => s.OUTPUTSELECT
+cin => cout.OUTPUTSELECT
+s[0] <= s.DB_MAX_OUTPUT_PORT_TYPE
+s[1] <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:4:UX|my_nadder:f0
+a[0] => my_adder:loop1:0:fx.a
+a[1] => my_adder:loop1:1:fx.a
+b[0] => my_adder:loop1:0:fx.b
+b[1] => my_adder:loop1:1:fx.b
+cin => my_adder:loop1:0:fx.cin
+s[0] <= my_adder:loop1:0:fx.s
+s[1] <= my_adder:loop1:1:fx.s
+cout <= my_adder:loop1:1:fx.cout
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:4:UX|my_nadder:f0|my_adder:\loop1:0:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:4:UX|my_nadder:f0|my_adder:\loop1:1:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:4:UX|my_nadder:f1
+a[0] => my_adder:loop1:0:fx.a
+a[1] => my_adder:loop1:1:fx.a
+b[0] => my_adder:loop1:0:fx.b
+b[1] => my_adder:loop1:1:fx.b
+cin => my_adder:loop1:0:fx.cin
+s[0] <= my_adder:loop1:0:fx.s
+s[1] <= my_adder:loop1:1:fx.s
+cout <= my_adder:loop1:1:fx.cout
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:4:UX|my_nadder:f1|my_adder:\loop1:0:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+
+|partA|nbit_adder:Z1|select_adder:\loop1:4:UX|my_nadder:f1|my_adder:\loop1:1:fx
+a => s.IN0
+a => cout.IN0
+b => s.IN1
+b => cout.IN1
+cin => s.IN1
+cin => cout.IN1
+s <= s.DB_MAX_OUTPUT_PORT_TYPE
+cout <= cout.DB_MAX_OUTPUT_PORT_TYPE
+
+

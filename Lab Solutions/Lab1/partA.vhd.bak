@@ -1,0 +1,42 @@
+--include
+
+Library IEEE;
+Use ieee.std_logic_1164.all;
+
+entity partA is 
+generic (n: integer := 10);
+port (  A,B:in std_logic_vector(n-1 downto 0);
+	F:out std_logic_vector(n-1 downto 0);
+	S:in std_logic_vector(1 downto 0);
+	Cin:in std_logic;
+	Cout:out std_logic );
+end entity;
+
+Architecture impPartA of partA is
+Component nbit_adder is 
+generic (n: integer := 10);
+port (  A,B:in std_logic_vector(n-1 downto 0);
+	F:out std_logic_vector(n-1 downto 0);
+	Cin:in std_logic;
+	Cout:out std_logic );
+End Component;
+signal ResCout: std_logic;
+signal ResB, Sum: std_logic_vector(n-1 downto 0);
+begin
+with S select
+	ResB <= "0000000000" when "00",
+		B when "01",
+		not B when "10",
+		"1111111111" when others;
+
+Z1: nbit_adder GENERIC MAP (n) PORT MAP (A, ResB, Sum, Cin, ResCout);
+
+F <= B  when Cin = '1' AND S = "11"
+	else Sum;
+
+Cout <= '0' when Cin = '1' AND S = "11"
+	    else ResCout;
+
+end impPartA;
+
+
