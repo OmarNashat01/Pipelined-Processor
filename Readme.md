@@ -19,7 +19,8 @@ OP code
 2-bits:
     -00 : type 0
     -01 : type 1
-    -1X : type 2 (X => Read or Write from MEM)
+    -10 : type 2
+    -11 : type 3 
 3-bits:
     - type 0:
       - identifier for each instruction

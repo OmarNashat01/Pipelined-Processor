@@ -2,31 +2,81 @@ from enum import Enum
 
 
 class INSTRUCTIONS(Enum):
-    NOP = 0
-    SETC = 1
-    CLRC = 2
-    NOT = 3
-    INC = 4
-    DEC = 5
-    OUT = 6
-    IN = 7
-    MOV = 8
-    ADD = 9
-    IADD = 10
-    SUB = 11
-    AND = 12
-    OR = 13
-    PUSH = 14
-    POP = 15
-    LDM = 16
-    LDD = 17
-    STD = 18
-    JZ = 19
-    JC = 20
-    JMP = 21
-    CALL = 22
-    RET = 23
-    RTI = 24
+    """
+    ## Type 0: (00)
+        - WB: 1
+        - EX: 1
+        - others: 0
+
+    ## Type 1: (01)
+        - WB: 1
+        - MEMR: code(1)
+        - IOR: code(2)
+        - others: 0
+    
+    ## Type 2: (10)
+        - MEMW: !code(2) 
+        - MEMR: code(2)
+        - DECSP: !code(2) & code(1) 
+        - INCSP: code(2)
+        - PCJMP: code(0)
+
+    ## Type 3: (11)
+        - all: 0 if !code(2)
+    """
+    NOT = "00000"
+    INC = "00001"
+    DEC = "00010"
+    ADD = "00011"
+    IADD = "00011"
+    SUB = "00100"
+    AND = "00101"
+    OR = "00110"
+
+    """
+    Type 1: (01)
+        - WB: 1
+        - MEMR: code(1)
+        - IOR: code(2)
+        - INCSP: code(1) & code(0)
+        - others: 0
+    """
+    MOV = "01000"
+    LDM = "01001"
+    LDD = "01010"
+    POP = "01011" 
+    IN =  "01100"
+
+
+    """
+    Type 2: (10)
+        - MEMW: !code(2) 
+        - MEMR: code(2)
+        - DECSP: !code(2) & code(1) 
+        - INCSP: code(2)
+        - PCJMP: code(0)
+    """ 
+    STD =  "10000"
+    PUSH = "10010"
+    CALL = "10011"
+
+    RET =  "10101"
+    RTI =  "10111" #WALU
+
+
+    """
+    Type 3: (11)
+        - all: 0 if !code(2)
+    """ 
+    NOP =  "11000"
+    JZ =   "11001" 
+    JC =   "11010"
+
+    SETC = "11100"
+    CLRC = "11101"
+    OUT =  "11110"
+    JMP =  "11111"
+
 
 class SIGNALS(Enum):
     """
@@ -35,7 +85,7 @@ class SIGNALS(Enum):
     ## Control signals
     - WB: Write back
     - MEM: Memory
-    - EX: Execute
+    - EX: Execute (change flags)
 
     ## I/O signals
     - IOR: Input read
@@ -86,3 +136,35 @@ class INSTRUCTION_TYPE(Enum):
     I_TYPE = 0
     R_TYPE = 1
     J_TYPE = 2
+
+
+assembler = {
+    "NOP": INSTRUCTIONS.NOP.value,
+    "SETC": INSTRUCTIONS.SETC.value,
+    "CLRC": INSTRUCTIONS.CLRC.value,
+    "NOT": INSTRUCTIONS.NOT.value,
+    "INC": INSTRUCTIONS.INC.value,
+    "DEC": INSTRUCTIONS.DEC.value,
+    "OUT": INSTRUCTIONS.OUT.value,
+    "IN": INSTRUCTIONS.IN.value,
+    "MOV": INSTRUCTIONS.MOV.value,
+    "ADD": INSTRUCTIONS.ADD.value,
+    "IADD": INSTRUCTIONS.IADD.value,
+    "SUB": INSTRUCTIONS.SUB.value,
+    "AND": INSTRUCTIONS.AND.value,
+    "OR": INSTRUCTIONS.OR.value,
+    "PUSH": INSTRUCTIONS.PUSH.value,
+    "POP": INSTRUCTIONS.POP.value,
+    "LDM": INSTRUCTIONS.LDM.value,
+    "LDD": INSTRUCTIONS.LDD.value,
+    "STD": INSTRUCTIONS.STD.value,
+    "JZ": INSTRUCTIONS.JZ.value,
+    "JC": INSTRUCTIONS.JC.value,
+    "JMP": INSTRUCTIONS.JMP.value,
+    "CALL": INSTRUCTIONS.CALL.value,
+    "RET": INSTRUCTIONS.RET.value,
+    "RTI": INSTRUCTIONS.RTI.value,
+}
+
+print(assembler["NOP"].value)
+
