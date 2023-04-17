@@ -32,29 +32,30 @@ class SIGNALS(Enum):
     """
     Signals:
     
-    ###### Control signals ######
-    WB: Write back
-    MEM: Memory
-    EX: Execute
+    ## Control signals
+    - WB: Write back
+    - MEM: Memory
+    - EX: Execute
 
-    ###### I/O signals ######
-    IOR: Input read
-    IOW: Output write
+    ## I/O signals
+    - IOR: Input read
+    - IOW: Output write
     
-    ###### ALU signals ######
-    SETC: Set carry
-    CLRC: Clear carry
+    ## ALU signals
+    - WALU: 2bits (00: OFF, 01: write from port, 10: CLRC, 11: SETC)
+    SETC: Set carry XX
+    CLRC: Clear carry XX
     
-    ###### Stack signals ######
-    INCSP: Increment stack pointer
-    DECSP: Decrement stack pointer
+    ## Stack signals
+    - INCSP: Increment stack pointer
+    - DECSP: Decrement stack pointer
 
-    ###### PC signals ######
-    PCJMP: Branching
+    ## PC signals
+    - PCJMP: Branching
 
 
-    ###### Immediate signals ######
-    IMDT: Immediate
+    ## Immediate signals
+    - IMDT: Immediate
 
     ###### Long instruction (32-bits) ######
     ###### Used to determine if another increment to the PC is needed ######
@@ -62,17 +63,17 @@ class SIGNALS(Enum):
 
     """
     WB = 0
-    MEM = 1
-    EX = 2
-    IOR = 3
-    IOW = 4
-    SETC = 5
-    CLRC = 6
-    INCSP = 7
-    DECSP = 8
-    PCJMP = 9
-    IMDT = 10
-    LNG = 11
+    MEMR = 1
+    MEMW = 2
+    EX = 3
+    IOR = 4
+    IOW = 5
+    WALU = 6
+    INCSP = 8
+    DECSP = 9
+    PCJMP = 10
+    IMDT = 11
+    LNG = 12
 
 
 class INSTRUCTION_TYPE(Enum):

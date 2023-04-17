@@ -1,33 +1,24 @@
 {
     "[]": [
-        "INSTRUCTIONS.NOP"
-    ],
-    "[<SIGNALS.SETC: 5>]": [
-        "INSTRUCTIONS.SETC"
-    ],
-    "[<SIGNALS.CLRC: 6>]": [
+        "INSTRUCTIONS.NOP",
+        "INSTRUCTIONS.JZ",
+        "INSTRUCTIONS.JC",
+        "INSTRUCTIONS.IN",
+        "INSTRUCTIONS.OUT",
+        "INSTRUCTIONS.SETC",
         "INSTRUCTIONS.CLRC"
     ],
-    "[<SIGNALS.WB: 0>, <SIGNALS.EX: 2>]": [
+    "[<SIGNALS.WB: 0>]": [
         "INSTRUCTIONS.NOT",
         "INSTRUCTIONS.INC",
         "INSTRUCTIONS.DEC",
+        "INSTRUCTIONS.MOV",
         "INSTRUCTIONS.ADD",
+        "INSTRUCTIONS.IADD",
         "INSTRUCTIONS.SUB",
         "INSTRUCTIONS.AND",
-        "INSTRUCTIONS.OR"
-    ],
-    "[<SIGNALS.IOW: 4>]": [
-        "INSTRUCTIONS.OUT"
-    ],
-    "[<SIGNALS.WB: 0>, <SIGNALS.IOR: 3>]": [
-        "INSTRUCTIONS.IN"
-    ],
-    "[<SIGNALS.WB: 0>]": [
-        "INSTRUCTIONS.MOV"
-    ],
-    "[<SIGNALS.WB: 0>, <SIGNALS.EX: 2>, <SIGNALS.IMDT: 10>]": [
-        "INSTRUCTIONS.IADD"
+        "INSTRUCTIONS.OR",
+        "INSTRUCTIONS.LDM"
     ],
     "[<SIGNALS.MEM: 1>, <SIGNALS.DECSP: 8>]": [
         "INSTRUCTIONS.PUSH"
@@ -35,21 +26,8 @@
     "[<SIGNALS.MEM: 1>, <SIGNALS.INCSP: 7>]": [
         "INSTRUCTIONS.POP"
     ],
-    "[<SIGNALS.WB: 0>, <SIGNALS.IMDT: 10>]": [
-        "INSTRUCTIONS.LDM"
-    ],
-    "[<SIGNALS.WB: 0>, <SIGNALS.MEM: 1>, <SIGNALS.EX: 2>]": [
-        "INSTRUCTIONS.LDD"
-    ],
-    "[<SIGNALS.MEM: 1>, <SIGNALS.EX: 2>]": [
+    "[<SIGNALS.MEM: 1>]": [
         "INSTRUCTIONS.STD"
-    ],
-    "[<SIGNALS.EX: 2>]": [
-        "INSTRUCTIONS.JZ",
-        "INSTRUCTIONS.JC"
-    ],
-    "[<SIGNALS.PCJMP: 9>]": [
-        "INSTRUCTIONS.JMP"
     ],
     "[<SIGNALS.MEM: 1>, <SIGNALS.DECSP: 8>, <SIGNALS.PCJMP: 9>]": [
         "INSTRUCTIONS.CALL"
@@ -57,7 +35,7 @@
     "[<SIGNALS.MEM: 1>, <SIGNALS.INCSP: 7>, <SIGNALS.PCJMP: 9>]": [
         "INSTRUCTIONS.RET"
     ],
-    "[<SIGNALS.WB: 0>, <SIGNALS.MEM: 1>, <SIGNALS.INCSP: 7>, <SIGNALS.PCJMP: 9>]": [
+    "[<SIGNALS.MEM: 1>, <SIGNALS.INCSP: 7>, <SIGNALS.PCJMP: 9>, <SIGNALS.WALU: 5>]": [
         "INSTRUCTIONS.RTI"
     ]
 }

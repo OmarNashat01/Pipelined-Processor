@@ -2,6 +2,7 @@
     "signals": [
         "INSTRUCTIONS.PUSH",
         "INSTRUCTIONS.POP",
+        "INSTRUCTIONS.STD",
         "INSTRUCTIONS.CALL",
         "INSTRUCTIONS.RET",
         "INSTRUCTIONS.RTI"
