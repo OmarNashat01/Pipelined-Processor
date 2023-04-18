@@ -1,0 +1,27 @@
+--include
+
+LIBRARY IEEE;
+USE ieee.std_logic_1164.ALL;
+
+ENTITY partB IS
+	GENERIC (n : INTEGER := 16);
+	PORT (
+		A, B : IN STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
+		F : OUT STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
+		S : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+		Cin : IN STD_LOGIC;
+		Cout : OUT STD_LOGIC);
+END ENTITY;
+
+ARCHITECTURE impPartB OF partB IS
+BEGIN
+	F <= A OR B WHEN S = "00"
+		ELSE
+		A AND B WHEN S = "01"
+		ELSE
+		A NOR B WHEN S = "10"
+		ELSE
+		NOT A;
+
+	Cout <= '0';
+END impPartB;
