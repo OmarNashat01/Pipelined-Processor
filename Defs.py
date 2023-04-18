@@ -104,9 +104,6 @@ class SIGNALS(Enum):
     - PCJMP: Branching
 
 
-    ## Immediate signals
-    - IMDT: Immediate
-
     ###### Long instruction (32-bits) ######
     ###### Used to determine if another increment to the PC is needed ######
     LNG: Long
@@ -122,8 +119,7 @@ class SIGNALS(Enum):
     INCSP = 8
     DECSP = 9
     PCJMP = 10
-    IMDT = 11
-    LNG = 12
+    LNG = 11
 
 
 class INSTRUCTION_TYPE(Enum):
