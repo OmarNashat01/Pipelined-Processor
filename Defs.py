@@ -24,14 +24,15 @@ class INSTRUCTIONS(Enum):
     ## Type 3: (11)
         - all: 0 if !code(2)
     """
-    NOT = "00000"
-    INC = "00001"
-    DEC = "00010"
-    ADD = "00011"
-    IADD = "00011"
-    SUB = "00100"
+    INC = "00000"
+    DEC = "00001"
+    ADD = "00010"
+    IADD = "00010"
+    SUB = "00011"
+
     AND = "00101"
     OR = "00110"
+    NOT = "00111"
 
     """
     Type 1: (01)
