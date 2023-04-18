@@ -6,9 +6,9 @@ ENTITY ALU IS
     PORT (
         src1, src2 : IN STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
         opCode : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-        cIn : IN STD_LOGIC;
+        flagRegister : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
         aluOut : OUT STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
-        cOut : OUT STD_LOGIC
+        flagRegisterOut : OUT STD_LOGIC_VECTOR(2 DOWNTO 0)
     );
 END ENTITY;
 
@@ -31,11 +31,12 @@ ARCHITECTURE struct OF ALU IS
             Cin : IN STD_LOGIC;
             Cout : OUT STD_LOGIC);
     END COMPONENT;
-    SIGNAL Cout_temp0, Cout_temp1, Cout_temp2, Cout_temp3 : STD_LOGIC;
-    SIGNAL F_temp0, F_temp1, F_temp2, F_temp3 : STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
+    SIGNAL Cout_temp0, Cout_temp1: STD_LOGIC;
+    SIGNAL F_temp0, F_temp1: STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
+    SIGNAL cIn_A, cIn_B : STD_LOGIC;
 BEGIN
-    pA : partA PORT MAP(src1, src2, F_temp0, opCode(1 DOWNTO 0), cIn, Cout_temp0);
-    pB : partB PORT MAP(src1, src2, F_temp1, opCode(1 DOWNTO 0), cIn, Cout_temp1);
+    pA : partA PORT MAP(src1, src2, F_temp0, opCode(1 DOWNTO 0), cIn_A, Cout_temp0);
+    pB : partB PORT MAP(src1, src2, F_temp1, opCode(1 DOWNTO 0), cIn_B, Cout_temp1);
 
     WITH opCode(2) SELECT
     aluOut <=
@@ -43,7 +44,7 @@ BEGIN
         F_temp1 WHEN OTHERS;
 
     WITH opCode(2) SELECT
-    cOut <=
+    flagRegisterOut(2) <=
         Cout_temp0 WHEN '0',
         Cout_temp1 WHEN OTHERS;
 

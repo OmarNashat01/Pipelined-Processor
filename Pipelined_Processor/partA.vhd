@@ -7,7 +7,6 @@ ENTITY partA IS
         A, B : IN STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
         F : OUT STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
         S : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
-        Cin : IN STD_LOGIC;
         Cout : OUT STD_LOGIC);
 END ENTITY;
 

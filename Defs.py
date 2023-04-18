@@ -25,10 +25,10 @@ class INSTRUCTIONS(Enum):
         - all: 0 if !code(2)
     """
     INC = "00000"
-    DEC = "00001"
-    ADD = "00010"
-    IADD = "00010"
-    SUB = "00011"
+    ADD = "00001"
+    IADD = "00001"
+    SUB = "00010"
+    DEC = "00011"
 
     AND = "00101"
     OR = "00110"
