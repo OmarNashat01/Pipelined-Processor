@@ -19,7 +19,6 @@ ARCHITECTURE struct OF ALU IS
             A, B : IN STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
             F : OUT STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
             S : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
-            Cin : IN STD_LOGIC;
             Cout : OUT STD_LOGIC);
     END COMPONENT;
     COMPONENT partB IS
@@ -32,9 +31,8 @@ ARCHITECTURE struct OF ALU IS
     END COMPONENT;
     SIGNAL Cout_temp0, Cout_temp1: STD_LOGIC;
     SIGNAL F_temp0, F_temp1: STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
-    SIGNAL cIn_A, cIn_B : STD_LOGIC;
 BEGIN
-    pA : partA PORT MAP(src1, src2, F_temp0, opCode(1 DOWNTO 0), cIn_A, Cout_temp0);
+    pA : partA PORT MAP(src1, src2, F_temp0, opCode(1 DOWNTO 0), Cout_temp0);
     pB : partB PORT MAP(src1, src2, F_temp1, opCode(1 DOWNTO 0), Cout_temp1);
 
     WITH opCode(2) SELECT
