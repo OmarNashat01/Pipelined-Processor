@@ -2,7 +2,7 @@ LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.numeric_std.ALL;
 
-ENTITY instruction_cache IS
+ENTITY InstructionCache IS
     GENERIC (
         addressSize : INTEGER := 16;
         ramWidth : INTEGER := 16
@@ -15,7 +15,7 @@ ENTITY instruction_cache IS
     );
 END ENTITY;
 
-ARCHITECTURE sync_ram_a OF instruction_cache IS
+ARCHITECTURE sync_ram_a OF InstructionCache IS
     TYPE ram_type IS ARRAY(0 TO 2 ** addressSize - 1) OF STD_LOGIC_VECTOR(ramWidth - 1 DOWNTO 0);
     SIGNAL ram : ram_type;
 BEGIN

@@ -6,9 +6,9 @@ ENTITY ALU IS
     PORT (
         src1, src2 : IN STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
         opCode : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-        flagRegister : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-        aluOut : OUT STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
-        flagRegisterOut : OUT STD_LOGIC_VECTOR(2 DOWNTO 0)
+        EX : IN STD_LOGIC;
+        WALU : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
+        aluOut : OUT STD_LOGIC_VECTOR(n - 1 DOWNTO 0)
     );
 END ENTITY;
 
@@ -29,20 +29,46 @@ ARCHITECTURE struct OF ALU IS
             S : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
             Cout : OUT STD_LOGIC);
     END COMPONENT;
-    SIGNAL Cout_temp0, Cout_temp1: STD_LOGIC;
-    SIGNAL F_temp0, F_temp1: STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
+    SIGNAL Cout_temp0, Cout_temp1 : STD_LOGIC;
+    SIGNAL F_temp0, F_temp1 : STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
+
+    SIGNAL ALUOut_temp : STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
+    SIGNAL flagRegister : STD_LOGIC_VECTOR(2 DOWNTO 0); -- (C, N, Z)
+    SIGNAL flagRegister_temp : STD_LOGIC_VECTOR(2 DOWNTO 0);
 BEGIN
     pA : partA PORT MAP(src1, src2, F_temp0, opCode(1 DOWNTO 0), Cout_temp0);
     pB : partB PORT MAP(src1, src2, F_temp1, opCode(1 DOWNTO 0), Cout_temp1);
 
+    aluOut <= ALUOut_temp; -- so i can read output and set flags
+
     WITH opCode(2) SELECT
-    aluOut <=
+    ALUOut_temp <=
         F_temp0 WHEN '0',
         F_temp1 WHEN OTHERS;
 
+    -- Flags
+    -- C
     WITH opCode(2) SELECT
-    flagRegisterOut(2) <=
+    flagRegister_temp(2) <=
         Cout_temp0 WHEN '0',
-        Cout_temp1 WHEN OTHERS;
+        flagRegister(2) WHEN OTHERS;
+
+    -- N
+    WITH ALUOut_temp(n - 1) SELECT
+    flagRegister_temp(1) <=
+        '1' WHEN '1',
+        '0' WHEN OTHERS;
+
+    -- Z
+    WITH ALUOut_temp SELECT
+    flagRegister_temp(0) <=
+        '1' WHEN x"0000",
+        '0' WHEN OTHERS;
+
+
+    WITH EX SELECT
+    flagRegister <=
+        flagRegister_temp WHEN '1',
+        flagRegister WHEN OTHERS;
 
 END struct;
