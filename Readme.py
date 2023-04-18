@@ -32,7 +32,7 @@ from Defs import INSTRUCTIONS, SIGNALS, INSTRUCTION_TYPE
 # }
 
 
-instructions = {
+instruction_signals = {
     INSTRUCTIONS.NOT : [SIGNALS.WB],# SIGNALS.EX
     INSTRUCTIONS.INC : [SIGNALS.WB],# SIGNALS.EX
     INSTRUCTIONS.DEC : [SIGNALS.WB],# SIGNALS.EX
@@ -131,7 +131,7 @@ def filter_by_signals():
         'signals': []
     }
     for instruction, signals_ in instruction_signals.items():
-        if signals_ and (SIGNALS.MEM in signals_ or SIGNALS.MEM in signals_) :
+        if signals_ and (SIGNALS.MEMR in signals_ or SIGNALS.MEMW in signals_) :
             mydict['signals'].append(str(instruction))
             
     with open('fitered.json', 'w') as f:

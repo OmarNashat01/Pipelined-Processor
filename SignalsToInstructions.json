@@ -1,41 +1,52 @@
 {
-    "[]": [
-        "INSTRUCTIONS.NOP",
-        "INSTRUCTIONS.JZ",
-        "INSTRUCTIONS.JC",
-        "INSTRUCTIONS.IN",
-        "INSTRUCTIONS.OUT",
-        "INSTRUCTIONS.SETC",
-        "INSTRUCTIONS.CLRC"
-    ],
     "[<SIGNALS.WB: 0>]": [
         "INSTRUCTIONS.NOT",
         "INSTRUCTIONS.INC",
         "INSTRUCTIONS.DEC",
-        "INSTRUCTIONS.MOV",
         "INSTRUCTIONS.ADD",
-        "INSTRUCTIONS.IADD",
         "INSTRUCTIONS.SUB",
         "INSTRUCTIONS.AND",
         "INSTRUCTIONS.OR",
+        "INSTRUCTIONS.MOV",
         "INSTRUCTIONS.LDM"
     ],
-    "[<SIGNALS.MEM: 1>, <SIGNALS.DECSP: 8>]": [
-        "INSTRUCTIONS.PUSH"
+    "[<SIGNALS.WB: 0>, <SIGNALS.MEMR: 1>]": [
+        "INSTRUCTIONS.LDD"
     ],
-    "[<SIGNALS.MEM: 1>, <SIGNALS.INCSP: 7>]": [
+    "[<SIGNALS.WB: 0>, <SIGNALS.MEMR: 1>, <SIGNALS.INCSP: 8>]": [
         "INSTRUCTIONS.POP"
     ],
-    "[<SIGNALS.MEM: 1>]": [
+    "[<SIGNALS.WB: 0>, <SIGNALS.IOR: 4>]": [
+        "INSTRUCTIONS.IN"
+    ],
+    "[<SIGNALS.MEMW: 2>]": [
         "INSTRUCTIONS.STD"
     ],
-    "[<SIGNALS.MEM: 1>, <SIGNALS.DECSP: 8>, <SIGNALS.PCJMP: 9>]": [
+    "[<SIGNALS.MEMW: 2>, <SIGNALS.DECSP: 9>]": [
+        "INSTRUCTIONS.PUSH"
+    ],
+    "[<SIGNALS.MEMW: 2>, <SIGNALS.DECSP: 9>, <SIGNALS.PCJMP: 10>]": [
         "INSTRUCTIONS.CALL"
     ],
-    "[<SIGNALS.MEM: 1>, <SIGNALS.INCSP: 7>, <SIGNALS.PCJMP: 9>]": [
+    "[<SIGNALS.MEMR: 1>, <SIGNALS.INCSP: 8>, <SIGNALS.PCJMP: 10>]": [
         "INSTRUCTIONS.RET"
     ],
-    "[<SIGNALS.MEM: 1>, <SIGNALS.INCSP: 7>, <SIGNALS.PCJMP: 9>, <SIGNALS.WALU: 5>]": [
+    "[<SIGNALS.MEMR: 1>, <SIGNALS.INCSP: 8>, <SIGNALS.PCJMP: 10>, <SIGNALS.WALU: 6>]": [
         "INSTRUCTIONS.RTI"
+    ],
+    "[]": [
+        "INSTRUCTIONS.NOP",
+        "INSTRUCTIONS.JZ",
+        "INSTRUCTIONS.JC"
+    ],
+    "[<SIGNALS.WALU: 6>]": [
+        "INSTRUCTIONS.SETC",
+        "INSTRUCTIONS.CLRC"
+    ],
+    "[<SIGNALS.IOW: 5>]": [
+        "INSTRUCTIONS.OUT"
+    ],
+    "[<SIGNALS.PCJMP: 10>]": [
+        "INSTRUCTIONS.JMP"
     ]
 }

@@ -1,8 +1,9 @@
 {
     "signals": [
-        "INSTRUCTIONS.PUSH",
+        "INSTRUCTIONS.LDD",
         "INSTRUCTIONS.POP",
         "INSTRUCTIONS.STD",
+        "INSTRUCTIONS.PUSH",
         "INSTRUCTIONS.CALL",
         "INSTRUCTIONS.RET",
         "INSTRUCTIONS.RTI"

@@ -163,5 +163,6 @@ assembler = {
     "RTI": INSTRUCTIONS.RTI.value,
 }
 
-print(assembler["NOP"].value)
+if __name__ == "__main__":
+    print(assembler["NOP"].value)
 
