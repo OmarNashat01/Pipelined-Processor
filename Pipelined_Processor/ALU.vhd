@@ -39,7 +39,10 @@ BEGIN
     pA : partA PORT MAP(src1, src2, F_temp0, opCode(1 DOWNTO 0), Cout_temp0);
     pB : partB PORT MAP(src1, src2, F_temp1, opCode(1 DOWNTO 0), Cout_temp1);
 
-    aluOut <= ALUOut_temp; -- so i can read output and set flags
+    WITH EX SELECT
+    aluOut <=
+        ALUOut_temp WHEN '1', -- so i can read output and set flags
+        src1 WHEN OTHERS;
 
     WITH opCode(2) SELECT
     ALUOut_temp <=
@@ -50,24 +53,22 @@ BEGIN
     -- C
     WITH opCode(2) SELECT
     flagRegister_temp(2) <=
-        Cout_temp0 WHEN '0',
-        flagRegister(2) WHEN OTHERS;
+    Cout_temp0 WHEN '0',
+    flagRegister(2) WHEN OTHERS;
 
     -- N
     WITH ALUOut_temp(n - 1) SELECT
     flagRegister_temp(1) <=
-        '1' WHEN '1',
-        '0' WHEN OTHERS;
+    '1' WHEN '1',
+    '0' WHEN OTHERS;
 
     -- Z
     WITH ALUOut_temp SELECT
-    flagRegister_temp(0) <=
+        flagRegister_temp(0) <=
         '1' WHEN x"0000",
         '0' WHEN OTHERS;
-
-
     WITH EX SELECT
-    flagRegister <=
+        flagRegister <=
         flagRegister_temp WHEN '1',
         flagRegister WHEN OTHERS;
 

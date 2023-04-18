@@ -7,6 +7,10 @@
 
 * we increment PC by one and another one if 32 bits instruction is detected (in FETCH).
 
+## Instruction Format
+
+   6         1       3     3     3      16
+(OP code) (unused) (Rs1) (Rs2) (Rdst) (Immediate)
 
 OP code
 (32 or 16 bit instruction) (rtype) (type) 

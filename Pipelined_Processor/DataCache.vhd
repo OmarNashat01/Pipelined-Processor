@@ -6,6 +6,7 @@ USE IEEE.numeric_std.ALL;
 -- Works on 2 stages
 -- * stage 0: read/write data
 -- * stage 1: update stack pointer
+-- make busy flag to know if mem is in use
 ENTITY DataCache IS
     GENERIC (
         addressSize : INTEGER := 16;
@@ -26,7 +27,7 @@ ARCHITECTURE sync_ram_a OF DataCache IS
     SIGNAL ram : ram_type;
 
     -- TODO: CHECKKKKK IFF WORRKKSSS
-    SIGNAL stackPointer : STD_LOGIC_VECTOR(addressSize - 1 DOWNTO 0) := (OTHERS => x'FFFE');
+    SIGNAL stackPointer : STD_LOGIC_VECTOR(addressSize - 1 DOWNTO 0) := x"FFFE";
 BEGIN
     PROCESS (clock)
         VARIABLE stage : STD_LOGIC := '0'; --0 stage 0 , 1 stage 1
