@@ -89,6 +89,9 @@ BEGIN
         signals => decoderSignals
     );
     
+    writeAddress <= dataCacheBuffer2DataOut(36 DOWNTO 34);
+    WB <= dataCacheBuffer2DataOut(32);
+    -- TODO: add logic for dataIn from output
     regFileInst : ENTITY work.RegisterFile PORT MAP(
         clock => clock,
         WB => WB,
@@ -149,12 +152,12 @@ BEGIN
 
     dataCacheInst: ENTITY work.DataCache PORT MAP(
         clock => clock,
-        MEMR => decoderSignals(1), --removed when buffers added
-        MEMW => decoderSignals(2), --removed when buffers added
-        stackRW => decoderSignals(9 downto 8), --removed when buffers added
+        MEMR => executeBufferOut(48),
+        MEMW => executeBufferOut(49),
+        stackRW => executeBufferOut(53 downto 52),
         readAddress => dataCacheReadAddress, -- logic needed
-        dataIn => dataCacheDataIn, -- Logic needed
-        dataOut => dataCacheDataOut -- Logic needed
+        dataIn => executeBufferOut(47 downto 32),
+        dataOut => dataCacheDataOut 
     );
 
     -- (3bit Rdst) (1bit IOW) (1bit WB) (16bit aluOut) (DataCacheDataOut)
