@@ -25,7 +25,7 @@ BEGIN
     WALU_Type2 <= "01" WHEN opCode(2 DOWNTO 0) = "111" ELSE
         "00";
 
-    Type0_Signals <= opCode(5) & "00000000011";
+    Type0_Signals <= opCode(5) & "00000001001";
 
     Type1_Signals <=
         opCode(5) & -- LNG
@@ -66,5 +66,5 @@ BEGIN
     WITH enable SELECT
         signals <=
         "000000000000" WHEN '0', -- when enable is 0, all signals are 0 (NOP)
-        OutSignals WHEN OTHERS; --error when checkin on 1 2 /9 cases handeled ??
+        OutSignals WHEN OTHERS;
 END myDecoder;

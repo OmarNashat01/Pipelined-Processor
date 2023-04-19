@@ -48,18 +48,20 @@ ARCHITECTURE struct OF CPU IS
     -- Data Cache
     SIGNAL dataCacheReadAddress : STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL dataCacheDataIn, dataCacheDataOut : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    SIGNAL dataOrAluOut : STD_LOGIC_VECTOR(15 DOWNTO 0);
 
     -- Data Cache Buffer1
     SIGNAL dataCacheBuffer1Enable : STD_LOGIC;
-    SIGNAL dataCacheBuffer1DataOut : STD_LOGIC_VECTOR(36 DOWNTO 0);
-    SIGNAL dataCacheBuffer1DataIn : STD_LOGIC_VECTOR(36 DOWNTO 0);
+    SIGNAL dataCacheBuffer1DataOut : STD_LOGIC_VECTOR(22 DOWNTO 0);
+    SIGNAL dataCacheBuffer1DataIn : STD_LOGIC_VECTOR(22 DOWNTO 0);
 
     -- Data Cache Buffer2
     SIGNAL dataCacheBuffer2Enable : STD_LOGIC;
-    SIGNAL dataCacheBuffer2DataOut : STD_LOGIC_VECTOR(36 DOWNTO 0);
-    SIGNAL dataCacheBuffer2DataIn : STD_LOGIC_VECTOR(36 DOWNTO 0);
+    SIGNAL dataCacheBuffer2DataOut : STD_LOGIC_VECTOR(20 DOWNTO 0);
+    SIGNAL dataCacheBuffer2DataIn : STD_LOGIC_VECTOR(20 DOWNTO 0);
 
 BEGIN
+    pcEnable <= '1'; -- always enabled cuz no hazards 
     pcInst : ENTITY work.PC PORT MAP(
         clock => clock,
         enable => pcEnable,
@@ -71,10 +73,11 @@ BEGIN
     icInst : ENTITY work.InstructionCache PORT MAP(
         readAddress => pcAddressOut,
         dataOut => instruction,
-        PCValid => pcEnable,
         PCAddress => pcAddressIn
     ); 
 
+    -- Always enabled cuz no hazards
+    fetchBufferEnable <= '1';
     fetchBufferInst : ENTITY work.StageBuffer GENERIC MAP( n => 32 ) PORT MAP(
         clock => clock,
         reset => reset,
@@ -83,26 +86,30 @@ BEGIN
         dataOut => fetchBufferOut
     );
 
+    decoderEnable <= '1';
     decoderInst : ENTITY work.Decoder PORT MAP(
         enable => decoderEnable,
         opCode => fetchBufferOut(31 DOWNTO 26),
         signals => decoderSignals
     );
     
-    writeAddress <= dataCacheBuffer2DataOut(36 DOWNTO 34);
-    WB <= dataCacheBuffer2DataOut(32);
-    -- TODO: add logic for dataIn from output
+    writeAddress <= dataCacheBuffer2DataOut(20 DOWNTO 18);
+    WB <= dataCacheBuffer2DataOut(16);
+    registerFileDataIn <= dataCacheBuffer2DataOut(15 DOWNTO 0);
     regFileInst : ENTITY work.RegisterFile PORT MAP(
         clock => clock,
         WB => WB,
         Rsrc1 => fetchBufferOut(24 DOWNTO 22),
         Rsrc2 => fetchBufferOut(21 DOWNTO 19),
-        Rdst => writeAddress,                   -- logic from output
+        Rdst => writeAddress,
         dataIn => registerFileDataIn,           -- logic from output
         Rout1 => registerOut1,
         Rout2 => registerOut2
     );
 
+    -- Always enabled cuz no hazards
+    decodeBufferEnable <= '1';
+    -- 75    downto   44    43 downto 32    31 downto 16   15 downto 0
     -- (32bit instruction) (12bits signals) (16 dataout1) (16 dataout2)
     decodeBufferDataIn <= (fetchBufferOut & decoderSignals & registerOut1 & registerOut2);
     decodeBufferInst: ENTITY work.StageBuffer GENERIC MAP( n => 76 ) PORT MAP(
@@ -114,7 +121,7 @@ BEGIN
     );
 
     -- MUX for ALU second operand
-    -- TODO: add logic for forwarding here (FU)
+    -- TODO2: add logic for forwarding here (FU)
     with decodeBufferOut(75) select
         aluSecondOperand <= 
             decodeBufferOut(59 downto 44) when '1',
@@ -131,6 +138,9 @@ BEGIN
         aluOut => aluOut
     );
 
+    -- Always enabled cuz no hazards
+    executeBufferEnable <= '1';
+    --56 downto 54  53 downto 52      51         50 downto 48       47 downto 32      31 downto 16        15 downto 0
     -- (3bit Rdst) (2bit stackRW) (1bit IOW) (3bit MEMW, MEMR, WB) (16bit aluOut) (16bit registerOut1) (16bit registerOut2)
     executeBufferDataIn <= (
             decodeBufferOut(68 downto 66) & -- Rdst
@@ -150,24 +160,38 @@ BEGIN
     );
 
 
+    with executeBufferOut(49) select
+        dataCacheReadAddress <=
+            executeBufferOut(31 downto 16) when '1',
+            executeBufferOut(15 downto 0) when OTHERS;
     dataCacheInst: ENTITY work.DataCache PORT MAP(
         clock => clock,
-        MEMR => executeBufferOut(48),
-        MEMW => executeBufferOut(49),
+        MEMR => executeBufferOut(49),
+        MEMW => executeBufferOut(50),
         stackRW => executeBufferOut(53 downto 52),
-        readAddress => dataCacheReadAddress, -- logic needed
+        readAddress => dataCacheReadAddress,
         dataIn => executeBufferOut(47 downto 32),
         dataOut => dataCacheDataOut 
     );
 
-    -- (3bit Rdst) (1bit IOW) (1bit WB) (16bit aluOut) (DataCacheDataOut)
+
+    -- Always enabled cuz no hazards
+    dataCacheBuffer1Enable <= '1';
+    with executeBufferOut(49) select
+    dataOrAluOut <=
+        dataCacheDataOut when '1',
+        aluOut when OTHERS;
+
+    -- (MEMW) (MEMR) (3bit Rdst) (1bit IOW) (1bit WB) (16bit out)
     dataCacheBuffer1DataIn <=
+        executeBufferOut(50) &
+        executeBufferOut(49) &
         executeBufferOut(56 downto 54) &
         executeBufferOut(51) &
         executeBufferOut(48) &
-        executeBufferOut(47 downto 32) &
-        dataCacheDataOut;
-    dataCacheBuffer1Inst: ENTITY work.StageBuffer GENERIC MAP( n => 37 ) PORT MAP(
+        dataOrAluOut;
+
+    dataCacheBuffer1Inst: ENTITY work.StageBuffer GENERIC MAP( n => 23 ) PORT MAP(
         clock => clock,
         reset => reset,
         enable => dataCacheBuffer1Enable,
@@ -175,11 +199,14 @@ BEGIN
         dataOut => dataCacheBuffer1DataOut
     );
 
-    dataCacheBuffer2Inst: ENTITY work.StageBuffer GENERIC MAP( n => 37 ) PORT MAP(
+    -- Always enabled cuz no hazards
+    dataCacheBuffer2Enable <= '1';
+    dataCacheBuffer2Inst: ENTITY work.StageBuffer GENERIC MAP( n => 21 ) PORT MAP(
         clock => clock,
         reset => reset,
         enable => dataCacheBuffer2Enable,
-        dataIn => dataCacheBuffer1DataOut,
+        dataIn => dataCacheBuffer1DataIn(20 downto 0),
+        -- dataIn => dataCacheBuffer1DataOut(20 downto 0),
         dataOut => dataCacheBuffer2DataOut
     );
 
