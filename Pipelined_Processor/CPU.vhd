@@ -99,8 +99,8 @@ BEGIN
     regFileInst : ENTITY work.RegisterFile PORT MAP(
         clock => clock,
         WB => WB,
-        Rsrc1 => fetchBufferOut(24 DOWNTO 22),
-        Rsrc2 => fetchBufferOut(21 DOWNTO 19),
+        Rsrc1 => fetchBufferOut(21 DOWNTO 19),
+        Rsrc2 => fetchBufferOut(18 DOWNTO 16),
         Rdst => writeAddress,
         dataIn => registerFileDataIn,           -- logic from output
         Rout1 => registerOut1,
@@ -180,7 +180,7 @@ BEGIN
     with executeBufferOut(49) select
     dataOrAluOut <=
         dataCacheDataOut when '1',
-        aluOut when OTHERS;
+        executeBufferOut(47 downto 32) when OTHERS;
 
     -- (MEMW) (MEMR) (3bit Rdst) (1bit IOW) (1bit WB) (16bit out)
     dataCacheBuffer1DataIn <=
