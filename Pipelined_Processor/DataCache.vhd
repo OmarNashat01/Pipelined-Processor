@@ -32,7 +32,7 @@ BEGIN
     PROCESS (clock)
         VARIABLE stage : STD_LOGIC := '0'; --0 stage 0 , 1 stage 1
     BEGIN
-        IF rising_edge(clock) THEN
+        IF falling_edge(clock) THEN
             IF stage = '0' THEN
                 stage := '1';
                 CASE stackRW IS
