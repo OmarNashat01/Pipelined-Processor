@@ -10,6 +10,14 @@ ENTITY CPU IS
 END ENTITY;
 
 ARCHITECTURE struct OF CPU IS
+
+    -- Signals for Buffer Bubbles
+    SIGNAL fetchBubble : STD_LOGIC_VECTOR(47 DOWNTO 0) := x"XXXX60XXXXXX";
+    SIGNAL decodeBubble : STD_LOGIC_VECTOR(91 DOWNTO 0) := x"XXXX60XXXXXX000XXXXXXXX";
+    SIGNAL executeBubble : STD_LOGIC_VECTOR(73 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL dataCache1Bubble : STD_LOGIC_VECTOR(39 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL dataCache2Bubble : STD_LOGIC_VECTOR(37 DOWNTO 0) := (OTHERS => '0');
+
     -- PC
     SIGNAL pcAddressIn, pcAddressOut : STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL pcEnable : STD_LOGIC;
@@ -19,7 +27,8 @@ ARCHITECTURE struct OF CPU IS
 
     -- Fetch Buffer
     SIGNAL fetchBufferEnable : STD_LOGIC;
-    SIGNAL fetchBufferOut : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL fetchBufferOut : STD_LOGIC_VECTOR(47 DOWNTO 0);
+    SIGNAL fetchBufferDataIn : STD_LOGIC_VECTOR(47 DOWNTO 0);
 
     -- Instruction Decoder
     SIGNAL decoderEnable : STD_LOGIC; -- if 0 then nop is inserted
@@ -33,8 +42,8 @@ ARCHITECTURE struct OF CPU IS
 
     -- decode buffer
     SIGNAL decodeBufferEnable : STD_LOGIC;
-    SIGNAL decodeBufferOut : STD_LOGIC_VECTOR(75 DOWNTO 0);
-    SIGNAL decodeBufferDataIn : STD_LOGIC_VECTOR(75 DOWNTO 0);
+    SIGNAL decodeBufferOut : STD_LOGIC_VECTOR(91 DOWNTO 0);
+    SIGNAL decodeBufferDataIn : STD_LOGIC_VECTOR(91 DOWNTO 0);
 
     -- ALU
     SIGNAL aluSecondOperand : STD_LOGIC_VECTOR(15 DOWNTO 0);
@@ -42,8 +51,8 @@ ARCHITECTURE struct OF CPU IS
 
     -- Execute Buffer
     SIGNAL executeBufferEnable : STD_LOGIC;
-    SIGNAL executeBufferOut : STD_LOGIC_VECTOR(56 DOWNTO 0);
-    SIGNAL executeBufferDataIn : STD_LOGIC_VECTOR(56 DOWNTO 0);
+    SIGNAL executeBufferOut : STD_LOGIC_VECTOR(73 DOWNTO 0);
+    SIGNAL executeBufferDataIn : STD_LOGIC_VECTOR(73 DOWNTO 0);
 
     -- Data Cache
     SIGNAL dataCacheReadAddress : STD_LOGIC_VECTOR(15 DOWNTO 0);
@@ -52,13 +61,13 @@ ARCHITECTURE struct OF CPU IS
 
     -- Data Cache Buffer1
     SIGNAL dataCacheBuffer1Enable : STD_LOGIC;
-    SIGNAL dataCacheBuffer1DataOut : STD_LOGIC_VECTOR(22 DOWNTO 0);
-    SIGNAL dataCacheBuffer1DataIn : STD_LOGIC_VECTOR(22 DOWNTO 0);
+    SIGNAL dataCacheBuffer1DataOut : STD_LOGIC_VECTOR(39 DOWNTO 0);
+    SIGNAL dataCacheBuffer1DataIn : STD_LOGIC_VECTOR(39 DOWNTO 0);
 
     -- Data Cache Buffer2
     SIGNAL dataCacheBuffer2Enable : STD_LOGIC;
-    SIGNAL dataCacheBuffer2DataOut : STD_LOGIC_VECTOR(20 DOWNTO 0);
-    SIGNAL dataCacheBuffer2DataIn : STD_LOGIC_VECTOR(20 DOWNTO 0);
+    SIGNAL dataCacheBuffer2DataOut : STD_LOGIC_VECTOR(37 DOWNTO 0);
+    SIGNAL dataCacheBuffer2DataIn : STD_LOGIC_VECTOR(37 DOWNTO 0);
 
 BEGIN
     pcEnable <= '1'; -- always enabled cuz no hazards 
@@ -76,13 +85,15 @@ BEGIN
         PCAddress => pcAddressIn
     ); 
 
+    fetchBufferDataIn <= inPort & instruction;
     -- Always enabled cuz no hazards
     fetchBufferEnable <= '1';
-    fetchBufferInst : ENTITY work.StageBuffer GENERIC MAP( n => 32 ) PORT MAP(
+    fetchBufferInst : ENTITY work.StageBuffer GENERIC MAP( n => 48 ) PORT MAP(
         clock => clock,
         reset => reset,
         enable => fetchBufferEnable,
-        dataIn => instruction,
+        dataIn => fetchBufferDataIn,
+        resetValue => fetchBubble,
         dataOut => fetchBufferOut
     );
 
@@ -95,10 +106,16 @@ BEGIN
     
     writeAddress <= dataCacheBuffer2DataOut(20 DOWNTO 18);
     WB <= dataCacheBuffer2DataOut(16);
-    registerFileDataIn <= dataCacheBuffer2DataOut(15 DOWNTO 0);
+    
+    -- MUX for Data into register file
+    with dataCacheBuffer2DataOut(21) select -- IOR
+    registerFileDataIn <= 
+        dataCacheBuffer2DataOut(37 downto 22)  when '1', -- 16 bit Input port
+        dataCacheBuffer2DataOut(15 downto 0) when OTHERS; -- 16 bit Data out
+
     regFileInst : ENTITY work.RegisterFile PORT MAP(
         clock => clock,
-        WB => WB,
+        WB => dataCacheBuffer2DataOut(16),
         Rsrc1 => fetchBufferOut(21 DOWNTO 19),
         Rsrc2 => fetchBufferOut(18 DOWNTO 16),
         Rdst => writeAddress,
@@ -109,14 +126,15 @@ BEGIN
 
     -- Always enabled cuz no hazards
     decodeBufferEnable <= '1';
-    -- 75    downto   44    43 downto 32    31 downto 16   15 downto 0
-    -- (32bit instruction) (12bits signals) (16 dataout1) (16 dataout2)
+    --91 downto 76     75 downto 44       43 downto 32    31 downto 16   15 downto 0
+    --(16bit input) (32bit instruction) (12bits signals) (16 dataout1)  (16 dataout2)
     decodeBufferDataIn <= (fetchBufferOut & decoderSignals & registerOut1 & registerOut2);
-    decodeBufferInst: ENTITY work.StageBuffer GENERIC MAP( n => 76 ) PORT MAP(
+    decodeBufferInst: ENTITY work.StageBuffer GENERIC MAP( n => 92 ) PORT MAP(
         clock => clock,
         reset => reset,
         enable => decodeBufferEnable,
         dataIn => decodeBufferDataIn,
+        resetValue => decodeBubble,
         dataOut => decodeBufferOut
     );
 
@@ -140,37 +158,37 @@ BEGIN
 
     -- Always enabled cuz no hazards
     executeBufferEnable <= '1';
-    --56 downto 54  53 downto 52      51         50 downto 48       47 downto 32      31 downto 16        15 downto 0
-    -- (3bit Rdst) (2bit stackRW) (1bit IOW) (3bit MEMW, MEMR, WB) (16bit aluOut) (16bit registerOut1) (16bit registerOut2)
+    -- 73 downto 58    57     56 downto 54  53 downto 52      51         50 downto 48       47 downto 32      31 downto 16        15 downto 0
+    --(16bit input)(1bit IOR) (3bit Rdst) (2bit stackRW) (1bit IOW) (3bit MEMW, MEMR, WB) (16bit aluOut) (16bit registerOut1) (16bit registerOut2)
     executeBufferDataIn <= (
+            decodeBufferOut(91 downto 76) & -- 16bit input
+            decodeBufferOut(36) &           -- IOR
             decodeBufferOut(68 downto 66) & -- Rdst
             decodeBufferOut(41 downto 40) &
             decodeBufferOut(37) &
             decodeBufferOut(34 downto 32) &
             aluOut &
-            decodeBufferOut(31 downto 0)  -- registerOut1 (16bit) & registerOut2 (16bit)
+            decodeBufferOut(31 downto 0)    -- registerOut1 (16bit) & registerOut2 (16bit)
     );
 
-    executeBufferInst: ENTITY work.StageBuffer GENERIC MAP( n => 57 ) PORT MAP(
+    executeBufferInst: ENTITY work.StageBuffer GENERIC MAP( n => 74 ) PORT MAP(
         clock => clock,
         reset => reset,
         enable => executeBufferEnable,
         dataIn => executeBufferDataIn,
+        resetValue => executeBubble,
         dataOut => executeBufferOut
     );
 
 
-    with executeBufferOut(49) select
-        dataCacheReadAddress <=
-            executeBufferOut(31 downto 16) when '1',
-            executeBufferOut(15 downto 0) when OTHERS;
     dataCacheInst: ENTITY work.DataCache PORT MAP(
         clock => clock,
         MEMR => executeBufferOut(49),
         MEMW => executeBufferOut(50),
         stackRW => executeBufferOut(53 downto 52),
-        readAddress => dataCacheReadAddress,
-        dataIn => executeBufferOut(47 downto 32),
+        readAddress => executeBufferOut(31 downto 16),
+       -- dataIn => executeBufferOut(47 downto 32),
+        dataIn => executeBufferOut(15 downto 0),
         dataOut => dataCacheDataOut 
     );
 
@@ -182,8 +200,10 @@ BEGIN
         dataCacheDataOut when '1',
         executeBufferOut(47 downto 32) when OTHERS;
 
-    -- (MEMW) (MEMR) (3bit Rdst) (1bit IOW) (1bit WB) (16bit out)
+    --(16bit input) (IOR) (MEMW) (MEMR) (3bit Rdst) (1bit IOW) (1bit WB) (16bit out)
     dataCacheBuffer1DataIn <=
+        executeBufferOut(73 downto 58) &
+        executeBufferOut(57) &
         executeBufferOut(50) &
         executeBufferOut(49) &
         executeBufferOut(56 downto 54) &
@@ -191,24 +211,33 @@ BEGIN
         executeBufferOut(48) &
         dataOrAluOut;
 
-    dataCacheBuffer1Inst: ENTITY work.StageBuffer GENERIC MAP( n => 23 ) PORT MAP(
+    dataCacheBuffer1Inst: ENTITY work.StageBuffer GENERIC MAP( n => 40 ) PORT MAP(
         clock => clock,
         reset => reset,
         enable => dataCacheBuffer1Enable,
         dataIn => dataCacheBuffer1DataIn,
+        resetValue => dataCache1Bubble,
         dataOut => dataCacheBuffer1DataOut
     );
 
+    -- (16bit input) (IOR) (3bit Rdst) (1bit IOW) (1bit WB) (16bit out)
+    dataCacheBuffer2DataIn <= 
+        dataCacheBuffer1DataOut(39 downto 24) &
+        dataCacheBuffer1DataOut(23) & 
+        dataCacheBuffer1DataOut(20 downto 0);
+    
     -- Always enabled cuz no hazards
     dataCacheBuffer2Enable <= '1';
-    dataCacheBuffer2Inst: ENTITY work.StageBuffer GENERIC MAP( n => 21 ) PORT MAP(
+    dataCacheBuffer2Inst: ENTITY work.StageBuffer GENERIC MAP( n => 38 ) PORT MAP(
         clock => clock,
         reset => reset,
         enable => dataCacheBuffer2Enable,
-        dataIn => dataCacheBuffer1DataIn(20 downto 0),
-        -- dataIn => dataCacheBuffer1DataOut(20 downto 0),
+        dataIn => dataCacheBuffer2DataIn,
+        resetValue => dataCache2Bubble,
         dataOut => dataCacheBuffer2DataOut
     );
+
+    outPort <= dataCacheBuffer2DataOut(15 downto 0);
 
 
 END struct;
