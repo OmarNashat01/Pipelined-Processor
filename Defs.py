@@ -199,13 +199,15 @@ def assembly_to_binary(filename :str):
                     if l in assembler:
                         c += 1
                         lineout += (assembler[l.upper()] + "X")
-                    elif l in registers:
+                    else:
                         regs = l.split(',')
                         for reg in regs:
+                            if (reg not in registers):
+                                continue
                             c += 1
-                            lineout += (registers[l.upper()])
+                            lineout += (registers[reg.upper()])
 
-                f2.write("0" + lineout + "000"*(4-c) + "\n")
+                f2.write("0" + lineout + "XXX"*(4-c) + "\n")
 
 
     
