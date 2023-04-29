@@ -1,5 +1,5 @@
 from enum import Enum
-
+import re
 
 class INSTRUCTIONS(Enum):
     """
@@ -13,11 +13,11 @@ class INSTRUCTIONS(Enum):
         - MEMR: code(1)
         - IOR: code(2)
         - others: 0
-    
+
     ## Type 2: (10)
-        - MEMW: !code(2) 
+        - MEMW: !code(2)
         - MEMR: code(2)
-        - DECSP: !code(2) & code(1) 
+        - DECSP: !code(2) & code(1)
         - INCSP: code(2)
         - PCJMP: code(0)
 
@@ -45,18 +45,18 @@ class INSTRUCTIONS(Enum):
     MOV = "01000"
     LDM = "01001"
     LDD = "01010"
-    POP = "01011" 
+    POP = "01011"
     IN =  "01100"
 
 
     """
     Type 2: (10)
-        - MEMW: !code(2) 
+        - MEMW: !code(2)
         - MEMR: code(2)
-        - DECSP: !code(2) & code(1) 
+        - DECSP: !code(2) & code(1)
         - INCSP: code(2)
         - PCJMP: code(0)
-    """ 
+    """
     STD =  "10000"
     PUSH = "10010"
     CALL = "10011"
@@ -68,9 +68,9 @@ class INSTRUCTIONS(Enum):
     """
     Type 3: (11)
         - all: 0 if !code(2)
-    """ 
+    """
     NOP =  "11000"
-    JZ =   "11001" 
+    JZ =   "11001"
     JC =   "11010"
 
     SETC = "11100"
@@ -82,7 +82,7 @@ class INSTRUCTIONS(Enum):
 class SIGNALS(Enum):
     """
     Signals:
-    
+
     ## Control signals
     - WB: Write back
     - MEM: Memory
@@ -91,12 +91,12 @@ class SIGNALS(Enum):
     ## I/O signals
     - IOR: Input read
     - IOW: Output write
-    
+
     ## ALU signals
     - WALU: 2bits (00: OFF, 01: write from port, 10: CLRC, 11: SETC)
     SETC: Set carry XX
     CLRC: Clear carry XX
-    
+
     ## Stack signals
     - INCSP: Increment stack pointer
     - DECSP: Decrement stack pointer
@@ -135,32 +135,33 @@ class INSTRUCTION_TYPE(Enum):
     J_TYPE = 2
 
 
+lng_instruction = ["IADD", "LDM"]
 assembler = {
-    "NOP": INSTRUCTIONS.NOP.value,
-    "SETC": INSTRUCTIONS.SETC.value,
-    "CLRC": INSTRUCTIONS.CLRC.value,
-    "NOT": INSTRUCTIONS.NOT.value,
-    "INC": INSTRUCTIONS.INC.value,
-    "DEC": INSTRUCTIONS.DEC.value,
-    "OUT": INSTRUCTIONS.OUT.value,
-    "IN": INSTRUCTIONS.IN.value,
-    "MOV": INSTRUCTIONS.MOV.value,
-    "ADD": INSTRUCTIONS.ADD.value,
-    "IADD": INSTRUCTIONS.IADD.value,
-    "SUB": INSTRUCTIONS.SUB.value,
-    "AND": INSTRUCTIONS.AND.value,
-    "OR": INSTRUCTIONS.OR.value,
-    "PUSH": INSTRUCTIONS.PUSH.value,
-    "POP": INSTRUCTIONS.POP.value,
-    "LDM": INSTRUCTIONS.LDM.value,
-    "LDD": INSTRUCTIONS.LDD.value,
-    "STD": INSTRUCTIONS.STD.value,
-    "JZ": INSTRUCTIONS.JZ.value,
-    "JC": INSTRUCTIONS.JC.value,
-    "JMP": INSTRUCTIONS.JMP.value,
-    "CALL": INSTRUCTIONS.CALL.value,
-    "RET": INSTRUCTIONS.RET.value,
-    "RTI": INSTRUCTIONS.RTI.value,
+    "NOP": [INSTRUCTIONS.NOP.value,],
+    "SETC": [INSTRUCTIONS.SETC.value,],
+    "CLRC":[ INSTRUCTIONS.CLRC.value,],
+    "NOT": [INSTRUCTIONS.NOT.value,],
+    "INC": [INSTRUCTIONS.INC.value,],
+    "DEC": [INSTRUCTIONS.DEC.value,],
+    "OUT": [INSTRUCTIONS.OUT.value,"XXX"],
+    "IN": [INSTRUCTIONS.IN.value,],
+    "MOV": [INSTRUCTIONS.MOV.value,],
+    "ADD": [INSTRUCTIONS.ADD.value,],
+    "IADD":[ INSTRUCTIONS.IADD.value,],
+    "SUB": [INSTRUCTIONS.SUB.value,],
+    "AND": [INSTRUCTIONS.AND.value,],
+    "OR": [INSTRUCTIONS.OR.value,],
+    "PUSH": [INSTRUCTIONS.PUSH.value,"XXX"],
+    "POP": [INSTRUCTIONS.POP.value,],
+    "LDM": [INSTRUCTIONS.LDM.value,],
+    "LDD": [INSTRUCTIONS.LDD.value,],
+    "STD": [INSTRUCTIONS.STD.value, "XXX"],
+    "JZ": [INSTRUCTIONS.JZ.value,],
+    "JC": [INSTRUCTIONS.JC.value,],
+    "JMP": [INSTRUCTIONS.JMP.value,],
+    "CALL":[ INSTRUCTIONS.CALL.value,],
+    "RET": [INSTRUCTIONS.RET.value,],
+    "RTI": [INSTRUCTIONS.RTI.value,],
 }
 registers = {
     "R0": "000",
@@ -174,31 +175,49 @@ registers = {
 }
 
 def assembly_to_binary(filename :str):
-
-    with open(filename, "r") as f:
+    regex = re.compile(r"^(\w|\.).*")
+    with open(filename, "r", encoding="utf-8") as f:
         with open(filename+".bin", "w") as f2:
+            # Headers for mem file
+            header = """
+// memory data file (do not edit the following line - required for mem load use)
+// instance=/cpu/icInst/ram
+// format=mti addressradix=h dataradix=s version=1.0 wordsperline=1"""
+            f2.writelines(header[1:]+"\n")
             lines = f.readlines()
+            line_number = 1
             for line in lines:
-                line = line.strip()
-                if line == "":
+                match = re.match(r"(^\w|^\.).*", line)
+                match = regex.search(line)
+                
+                if not match:
                     continue
-                if line[0] == "#":
+                line = match.group(0).split('#')[0].strip()
+                if not line or line == "":
                     continue
                 if line[0] == ".":
+                    f2.write("   0: " + (16-len(line.split()[1].strip()))*"0" + line.split()[1].strip()+"\n")
+                    f2.write("   1: " + "ADD INTERRUPT"+"\n")
                     continue
 
-                line = line.split(" ")
+                line = line.split(",")
+                line = [l.strip() for l in line]
+                line = line[0].split(" ") + line[1:]
+                # print(line)
                 lineout = ""
-                c = 0
-                for l in line:
-                    l = l.strip()
-                    if l == "":
-                        continue
-                    if l[0] == "#":
-                        break
+                rdst_missing = False
+                lng = False
+
+                if (len(assembler[line[0].upper().strip()]) == 2):
+                    rdst_missing = True
+                if (line[0].upper().strip() in lng_instruction):
+                    lng = True
+                lineout += (''.join(assembler[line[0].upper().strip()]) + "X")
+
+                c = 1
+                for l in line[1:]:
                     if l in assembler:
                         c += 1
-                        lineout += (assembler[l.upper()] + "X")
                     else:
                         regs = l.split(',')
                         for reg in regs:
@@ -207,10 +226,11 @@ def assembly_to_binary(filename :str):
                             c += 1
                             lineout += (registers[reg.upper()])
 
-                f2.write("0" + lineout + "XXX"*(4-c) + "\n")
+                line_number += 1
+                start = '%04s: ' % str(hex(line_number))[2:]
+                f2.write( start + str(int(lng)) + lineout + "XXX"*(4-c - rdst_missing) + "\n")
 
 
-    
 
 
 
