@@ -140,7 +140,7 @@ BEGIN
 
     -- MUX for ALU second operand
     -- TODO2: add logic for forwarding here (FU)
-    with decodeBufferOut(75) select
+    with decodeBufferOut(75) select     -- LNG
         aluSecondOperand <= 
             decodeBufferOut(59 downto 44) when '1',
             decodeBufferOut(15 downto 0) when OTHERS;
@@ -195,7 +195,7 @@ BEGIN
 
     -- Always enabled cuz no hazards
     dataCacheBuffer1Enable <= '1';
-    with executeBufferOut(49) select
+    with executeBufferOut(49) select     -- MEMR
     dataOrAluOut <=
         dataCacheDataOut when '1',
         executeBufferOut(47 downto 32) when OTHERS;
