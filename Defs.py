@@ -1,5 +1,6 @@
 from enum import Enum
 import re
+import sys
 
 class INSTRUCTIONS(Enum):
     """
@@ -174,30 +175,41 @@ registers = {
     "R7": "111",
 }
 
+header = """
+// memory data file (do not edit the following line - required for mem load use)
+// instance=/cpu/icInst/ram
+// format=mti addressradix=h dataradix=s version=1.0 wordsperline=1"""
+
 def assembly_to_binary(filename :str):
+    outFileDict = {}
+    line_number = 0
+    last_org = False
     regex = re.compile(r"^(\w|\.).*")
     with open(filename, "r", encoding="utf-8") as f:
         with open(filename+".bin", "w") as f2:
             # Headers for mem file
-            header = """
-// memory data file (do not edit the following line - required for mem load use)
-// instance=/cpu/icInst/ram
-// format=mti addressradix=h dataradix=s version=1.0 wordsperline=1"""
             f2.writelines(header[1:]+"\n")
-            lines = f.readlines()
-            line_number = 1
+            lines = iter(f.readlines())
             for line in lines:
+                if last_org and line[0].isdigit():
+                    num_to_write = line.split("#")[0].strip()
+                    outFileDict[line_number] = "0" * (16 - len(num_to_write)) + num_to_write + "\n"
+                    line_number += 1
+                    last_org = False
+                    continue
                 match = re.match(r"(^\w|^\.).*", line)
                 match = regex.search(line)
-                
+
                 if not match:
                     continue
                 line = match.group(0).split('#')[0].strip()
                 if not line or line == "":
                     continue
                 if line[0] == ".":
-                    f2.write("   0: " + (16-len(line.split()[1].strip()))*"0" + line.split()[1].strip()+"\n")
-                    f2.write("   1: " + "ADD INTERRUPT"+"\n")
+                    line = line.split()
+                    line_number = int(line[1],16) # get the line number and cast it from hex to decimal
+                    last_org = True
+
                     continue
 
                 line = line.split(",")
@@ -216,24 +228,32 @@ def assembly_to_binary(filename :str):
 
                 c = 1
                 for l in line[1:]:
-                    if l in assembler:
-                        c += 1
-                    else:
-                        regs = l.split(',')
-                        for reg in regs:
-                            if (reg not in registers):
-                                continue
-                            c += 1
-                            lineout += (registers[reg.upper()])
+                    if (l not in registers):
+                        continue
+                    c += 1
+                    lineout += (registers[l.upper()])
+
+
+                # start = '%04s: ' % str(hex(line_number))[2:]
+                outFileDict[line_number] =  str(int(lng)) + lineout + "XXX"*(4-c - rdst_missing) + "\n"
+                if (lng):
+                    line_number += 1
+                    outFileDict[line_number] = "0" * (16 - len(line[-1])) + line[-1] + "\n"
 
                 line_number += 1
-                start = '%04s: ' % str(hex(line_number))[2:]
-                f2.write( start + str(int(lng)) + lineout + "XXX"*(4-c - rdst_missing) + "\n")
+
+            for i in range(max(outFileDict.keys())+1):
+                start = '%{max_number_digits}s: '.format(max_number_digits=len(str(hex(max(outFileDict.keys())+1)))-2) % str(hex(i))[2:]
+                f2.writelines(start)
+                if i in outFileDict:
+                    f2.writelines(outFileDict[i])
+                else:
+                    f2.writelines("X"*16+"\n")
 
 
 
 
 
 if __name__ == "__main__":
-    assembly_to_binary("code.asm")
+    assembly_to_binary(sys.argv[1])
 
