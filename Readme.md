@@ -9,8 +9,13 @@
 
 ## Instruction Format
 
-   6         1       3     3     3      16
+    6         1       3     3     3      16
 (OP code) (unused) (Rs1) (Rs2) (Rdst) (Immediate)
+
+| Command | Description |
+| --- | --- |
+| git status | List all new or modified files |
+| git diff | Show file differences that haven't been staged |
 
 OP code
 (32 or 16 bit instruction) (rtype) (type) 
