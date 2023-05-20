@@ -12,14 +12,17 @@ ENTITY StageBuffer IS
 END StageBuffer;
 
 ARCHITECTURE a_Buffer OF StageBuffer IS
+SIGNAL data : STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
 BEGIN
+	dataOut <= data WHEN enable = '1' ELSE
+				(resetValue);
 	PROCESS (clock, reset)
 	BEGIN
 		IF rising_edge(clock) THEN
 			IF reset = '1' THEN
-				dataOut <= resetValue;
+				data <= resetValue;
 			ELSIF enable = '1' THEN
-				dataOut <= dataIn;
+				data <= dataIn;
 			END IF;
 		END IF;
 	END PROCESS;
