@@ -1,0 +1,8 @@
+[ ] jmp unconditional can be handled with the conditional m3 el ex 3ashan data hazard
+[ ] memory1 ne3mlha FU
+[ ] Regwrite is need in FU fl taht
+[ ] load use htakhod mn el buffer el abl el akheer
+[ ] RET, RTI el address tale3 b3d el MEM2
+[ ] MUX abl el execute mehtag yekhtar ben el PC wla el ex mux, flags
+[ ] WALU mehtag n-handle el carry
+[ ] fl interrupt, I need to push flags, push pc el sah fa lw gy control hazard nshof hndelay cycles wla hnzwd hardware, w ageeb M[1] w nezwd el sp bi 32 msh 16
