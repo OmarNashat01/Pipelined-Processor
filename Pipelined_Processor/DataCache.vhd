@@ -41,7 +41,7 @@ BEGIN
                         dataOut <= ram(to_integer(unsigned(readAddress)));
 
                     WHEN "10" => -- pop
-                        dataOut <= ram(to_integer(unsigned(stackPointer)));
+                        dataOut <= ram(to_integer(unsigned(stackPointer)) - 1);
 
                     WHEN OTHERS => -- memory operations without stack
                         IF MEMW = '1' THEN
