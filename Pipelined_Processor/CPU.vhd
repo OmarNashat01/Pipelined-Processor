@@ -35,8 +35,6 @@ ARCHITECTURE struct OF CPU IS
     SIGNAL decoderSignals : STD_LOGIC_VECTOR(11 DOWNTO 0);
 
     --- Register File
-    SIGNAL WB : STD_LOGIC;
-    SIGNAL writeAddress : STD_LOGIC_VECTOR(2 DOWNTO 0);
     SIGNAL registerFileDataIn : STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL registerOut1, registerOut2 : STD_LOGIC_VECTOR(15 DOWNTO 0);
 
@@ -48,6 +46,9 @@ ARCHITECTURE struct OF CPU IS
     -- ALU
     SIGNAL aluSecondOperand : STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL aluOut : STD_LOGIC_VECTOR(15 DOWNTO 0);
+
+    SIGNAL Rsrc1DataAluIn : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    SIGNAL Rsrc2DataAluIn : STD_LOGIC_VECTOR(15 DOWNTO 0);
 
     -- Execute Buffer
     SIGNAL executeBufferEnable : STD_LOGIC;
@@ -68,6 +69,13 @@ ARCHITECTURE struct OF CPU IS
     SIGNAL dataCacheBuffer2Enable : STD_LOGIC;
     SIGNAL dataCacheBuffer2DataOut : STD_LOGIC_VECTOR(37 DOWNTO 0);
     SIGNAL dataCacheBuffer2DataIn : STD_LOGIC_VECTOR(37 DOWNTO 0);
+
+    -- Forwarding Unit
+    SIGNAL aluSelectorRsrc1FUOut : STD_LOGIC;
+    SIGNAL aluSelectorRsrc2FUOut : STD_LOGIC;
+    SIGNAL Rsrc1DataFUOut : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    SIGNAL Rsrc2DataFUOut : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    SIGNAL loadUseHazardFUOut : STD_LOGIC;
 
 BEGIN
     pcEnable <= '1'; -- always enabled cuz no hazards 
@@ -104,9 +112,6 @@ BEGIN
         signals => decoderSignals
     );
     
-    writeAddress <= dataCacheBuffer2DataOut(20 DOWNTO 18);
-    WB <= dataCacheBuffer2DataOut(16);
-    
     -- MUX for Data into register file
     with dataCacheBuffer2DataOut(21) select -- IOR
     registerFileDataIn <= 
@@ -118,12 +123,15 @@ BEGIN
         WB => dataCacheBuffer2DataOut(16),
         Rsrc1 => fetchBufferOut(21 DOWNTO 19),
         Rsrc2 => fetchBufferOut(18 DOWNTO 16),
-        Rdst => writeAddress,
-        dataIn => registerFileDataIn,           -- logic from output
+        Rdst => dataCacheBuffer2DataOut(20 DOWNTO 18),     -- write address
+        dataIn => registerFileDataIn,                      -- logic from output
         Rout1 => registerOut1,
         Rout2 => registerOut2
     );
 
+    -- 32-bit instruction (75 downto 44)
+    -- 75 downto 70         69      68 downto 66  65 downto 63  62 downto 60  59 downto 44
+    -- 6 bits opCode, 1 bit unused, 3 bits Rsrc1, 3 bits Rsrc2, 3 bits Rdst, 16 bits Immediate
     -- Always enabled cuz no hazards
     decodeBufferEnable <= '1';
     --91 downto 76     75 downto 44       43 downto 32    31 downto 16   15 downto 0
@@ -138,17 +146,25 @@ BEGIN
         dataOut => decodeBufferOut
     );
 
-    -- MUX for ALU second operand
-    -- TODO2: add logic for forwarding here (FU)
+    with aluSelectorRsrc1FUOut select -- FU (Forwarding Unit)
+        Rsrc1DataAluIn <=
+            decodeBufferOut(31 downto 16) when '0',
+            Rsrc1DataFUOut when OTHERS;
+
+    with aluSelectorRsrc2FUOut select -- FU (Forwarding Unit)
+        Rsrc2DataAluIn <=
+            decodeBufferOut(15 downto 0) when '0',
+            Rsrc2DataFUOut when OTHERS;
+
+    -- MUX for ALU second operand (Rsrc2 or immediate)
     with decodeBufferOut(75) select     -- LNG
         aluSecondOperand <= 
             decodeBufferOut(59 downto 44) when '1',
-            decodeBufferOut(15 downto 0) when OTHERS;
-
+            Rsrc2DataAluIn when OTHERS;
 
 
     aluInst: ENTITY work.ALU PORT MAP(
-        src1 => decodeBufferOut(31 downto 16),
+        src1 => Rsrc1DataAluIn,
         src2 => aluSecondOperand,
         opCode => decodeBufferOut(72 downto 70),
         EX => decodeBufferOut(35),
@@ -158,12 +174,12 @@ BEGIN
 
     -- Always enabled cuz no hazards
     executeBufferEnable <= '1';
-    -- 73 downto 58    57     56 downto 54  53 downto 52      51         50 downto 48       47 downto 32      31 downto 16        15 downto 0
-    --(16bit input)(1bit IOR) (3bit Rdst) (2bit stackRW) (1bit IOW) (3bit MEMW, MEMR, WB) (16bit aluOut) (16bit registerOut1) (16bit registerOut2)
+    -- 73 downto 58    57     56 downto 54  53 downto 52      51     50   49  48  47 downto 32      31 downto 16        15 downto 0
+    --(16bit input)(1bit IOR) (3bit Rdst) (2bit stackRW) (1bit IOW) MEMW MEMR WB (16bit aluOut) (16bit registerOut1) (16bit registerOut2)
     executeBufferDataIn <= (
             decodeBufferOut(91 downto 76) & -- 16bit input
             decodeBufferOut(36) &           -- IOR
-            decodeBufferOut(68 downto 66) & -- Rdst
+            decodeBufferOut(62 downto 60) & -- Rdst  --Ask Nashaat kanet (68 downto 66) bs keda ghlt??
             decodeBufferOut(41 downto 40) &
             decodeBufferOut(37) &
             decodeBufferOut(34 downto 32) &
@@ -199,7 +215,8 @@ BEGIN
     dataOrAluOut <=
         dataCacheDataOut when '1',
         executeBufferOut(47 downto 32) when OTHERS;
-
+    
+    -- 39 downto 24  23    22     21    20 downto 18    17         16    15 downto 0
     --(16bit input) (IOR) (MEMW) (MEMR) (3bit Rdst) (1bit IOW) (1bit WB) (16bit out)
     dataCacheBuffer1DataIn <=
         executeBufferOut(73 downto 58) &
@@ -220,6 +237,7 @@ BEGIN
         dataOut => dataCacheBuffer1DataOut
     );
 
+    -- 37 downto 22    21  20 downto 18   17         16     15 downto 0
     -- (16bit input) (IOR) (3bit Rdst) (1bit IOW) (1bit WB) (16bit out)
     dataCacheBuffer2DataIn <= 
         dataCacheBuffer1DataOut(39 downto 24) &
@@ -235,6 +253,27 @@ BEGIN
         dataIn => dataCacheBuffer2DataIn,
         resetValue => dataCache2Bubble,
         dataOut => dataCacheBuffer2DataOut
+    );
+
+    ForwardingUnitInst: ENTITY work.ForwardingUnit PORT MAP(
+        clock => clock,
+        decode_rsrc1 => decodeBufferOut(68 downto 66),   --Check with Rana
+        decode_rsrc2 => decodeBufferOut(65 downto 63),   --Check with Rana
+        execute_rdst => executeBufferOut(56 downto 54),
+        mem1_rdst => dataCacheBuffer1DataOut(20 downto 18),
+        mem2_rdst => dataCacheBuffer2DataOut(20 downto 18),
+	    execute_rdst_val => executeBufferOut(47 downto 32),
+	    mem1_rdst_val => dataCacheBuffer1DataOut(15 downto 0),
+        mem2_rdst_val => dataCacheBuffer2DataOut(15 downto 0),
+        WB_execute => executeBufferOut(48),
+        WB_mem1 => dataCacheBuffer1DataOut(16),
+        WB_mem2 => dataCacheBuffer2DataOut(16),
+        MEMR_execute => executeBufferOut(49),
+        alu_selector_rsrc1 => aluSelectorRsrc1FUOut,
+        alu_selector_rsrc2 => aluSelectorRsrc2FUOut,
+        alu_rsrc1_val => Rsrc1DataFUOut,
+        alu_rsrc2_val => Rsrc2DataFUOut,
+        load_use_hazard => loadUseHazardFUOut
     );
 
     outPort <= dataCacheBuffer2DataOut(15 downto 0);
