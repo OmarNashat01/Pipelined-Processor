@@ -46,8 +46,8 @@ BEGIN
 
     WITH opCode(2) SELECT
     ALUOut_temp <=
-        F_temp0 WHEN '0',
-        F_temp1 WHEN OTHERS;
+        F_temp1 WHEN '0',
+        F_temp0 WHEN OTHERS;
 
     -- Flags
     -- C

@@ -20,6 +20,7 @@ ARCHITECTURE myDecoder OF Decoder IS
     SIGNAL Type2_Signals : STD_LOGIC_VECTOR(11 DOWNTO 0);
     SIGNAL Type3_Signals : STD_LOGIC_VECTOR(11 DOWNTO 0);
     SIGNAL OutSignals : STD_LOGIC_VECTOR(11 DOWNTO 0);
+    SIGNAL lngType1: STD_LOGIC;
 BEGIN
 
     WALU_Type2 <= "01" WHEN opCode(2 DOWNTO 0) = "111" ELSE
@@ -27,8 +28,11 @@ BEGIN
 
     Type0_Signals <= opCode(5) & "00000001001";
 
+    -- Make IN inst as loong wihtout having the long bit set
+    lngType1 <= '1' WHEN (opCode(4 downto 0) = "01001") OR opCode(5) = '1' 
+                ELSE '0';
     Type1_Signals <=
-        opCode(5) & -- LNG
+        lngType1 & -- LNG
         "0" & "0" & -- PCJMP & DECSP
         (opCode(1) AND opCode(0)) & -- INCSP
         "00" & "0" & -- WALU & IOW

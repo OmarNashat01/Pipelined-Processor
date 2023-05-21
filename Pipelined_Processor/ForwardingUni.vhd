@@ -17,7 +17,9 @@ end ForwardingUnit;
 
 ARCHITECTURE imp_ForwardingUnit OF ForwardingUnit IS
 BEGIN
-	PROCESS (clock, decode_rsrc1, decode_rsrc2, execute_rdst, mem1_rdst, mem2_rdst)
+--, decode_rsrc1, decode_rsrc2, execute_rdst, mem1_rdst, mem2_rdst
+	
+	PROCESS (clock)
 	BEGIN
 		IF rising_edge(clock) THEN
 			alu_selector_rsrc1 <= '0';

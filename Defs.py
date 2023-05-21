@@ -44,10 +44,12 @@ class INSTRUCTIONS(Enum):
         - others: 0
     """
     MOV = "01000"
+
     LDM = "01001"
+    IN =  "01001"
+
     LDD = "01010"
     POP = "01011"
-    IN =  "01100"
 
 
     """
