@@ -17,40 +17,29 @@ end ForwardingUnit;
 
 ARCHITECTURE imp_ForwardingUnit OF ForwardingUnit IS
 BEGIN
---, decode_rsrc1, decode_rsrc2, execute_rdst, mem1_rdst, mem2_rdst
-	
-	PROCESS (clock)
-	BEGIN
-		IF rising_edge(clock) THEN
-			alu_selector_rsrc1 <= '0';
-			alu_selector_rsrc2 <= '0';
-			load_use_hazard <= '0';
 
-			IF decode_rsrc1 = execute_rdst AND WB_execute = '1' THEN
-				alu_selector_rsrc1 <= '1';
-				alu_rsrc1_val <= execute_rdst_val;
-				IF (MEMR_execute = '1') THEN
-					load_use_hazard <= '1';
-				END IF;
-			ELSIF decode_rsrc1 = mem1_rdst AND WB_mem1 = '1' THEN
-				alu_selector_rsrc1 <= '1';
-				alu_rsrc1_val <= mem1_rdst_val;
-			ELSIF decode_rsrc1 = mem2_rdst AND WB_mem2 = '1' THEN
-				alu_selector_rsrc1 <= '1';
-				alu_rsrc1_val <= mem2_rdst_val;
-			END IF;
+	alu_selector_rsrc1 <= '1' WHEN (decode_rsrc1 = execute_rdst AND WB_execute = '1') ELSE
+						 '1' WHEN (decode_rsrc1 = mem1_rdst AND WB_mem1 = '1') ELSE
+						 '1' WHEN (decode_rsrc1 = mem2_rdst AND WB_mem2 = '1') ELSE
+						 '0';
 
-			IF decode_rsrc2 = execute_rdst AND WB_execute = '1' THEN
-				alu_selector_rsrc2 <= '1';
-				alu_rsrc2_val <= execute_rdst_val;
-			ELSIF decode_rsrc2 = mem1_rdst AND WB_mem1 = '1' THEN
-				alu_selector_rsrc2 <= '1';
-				alu_rsrc2_val <= mem1_rdst_val;
-			ELSIF decode_rsrc2 = mem2_rdst AND WB_mem2 = '1' THEN
-				alu_selector_rsrc2 <= '1';
-				alu_rsrc2_val <= mem2_rdst_val;
-			END IF;
-		
-		END IF;
-	END PROCESS;
+	alu_rsrc1_val <= execute_rdst_val WHEN (decode_rsrc1 = execute_rdst) ELSE
+					mem1_rdst_val WHEN (decode_rsrc1 = mem1_rdst) ELSE
+					mem2_rdst_val WHEN (decode_rsrc1 = mem2_rdst) ELSE
+					"0000000000000000";
+
+
+	alu_selector_rsrc2 <= '1' WHEN (decode_rsrc2 = execute_rdst AND WB_execute = '1') ELSE
+						 '1' WHEN (decode_rsrc2 = mem1_rdst AND WB_mem1 = '1') ELSE
+						 '1' WHEN (decode_rsrc2 = mem2_rdst AND WB_mem2 = '1') ELSE
+						 '0';
+
+	alu_rsrc2_val <= execute_rdst_val WHEN (decode_rsrc2 = execute_rdst) ELSE
+					mem1_rdst_val WHEN (decode_rsrc2 = mem1_rdst) ELSE
+					mem2_rdst_val WHEN (decode_rsrc2 = mem2_rdst) ELSE
+					"0000000000000000";
+
+	load_use_hazard <= '1' WHEN ( (decode_rsrc1 = execute_rdst OR decode_rsrc2 = execute_rdst)  AND WB_execute = '1' AND MEMR_execute = '1')
+						ELSE '0';
+
 END imp_ForwardingUnit;

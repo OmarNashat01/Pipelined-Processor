@@ -42,12 +42,12 @@ BEGIN
     WITH EX SELECT
     aluOut <=
         ALUOut_temp WHEN '1', -- so i can read output and set flags
-        src1 WHEN OTHERS;
+        src2 WHEN OTHERS;
 
     WITH opCode(2) SELECT
     ALUOut_temp <=
-        F_temp1 WHEN '0',
-        F_temp0 WHEN OTHERS;
+        F_temp0 WHEN '0',
+        F_temp1 WHEN OTHERS;
 
     -- Flags
     -- C
