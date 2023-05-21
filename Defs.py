@@ -154,7 +154,7 @@ assembler = {
     "SUB": [INSTRUCTIONS.SUB.value,],
     "AND": [INSTRUCTIONS.AND.value,],
     "OR": [INSTRUCTIONS.OR.value,],
-    "PUSH": [INSTRUCTIONS.PUSH.value,"XXX"],
+    "PUSH": [INSTRUCTIONS.PUSH.value,"XXXXXX"],
     "POP": [INSTRUCTIONS.POP.value,],
     "LDM": [INSTRUCTIONS.LDM.value,],
     "LDD": [INSTRUCTIONS.LDD.value,],
@@ -188,13 +188,14 @@ def assembly_to_binary(filename :str):
     last_org = False
     regex = re.compile(r"^(\w|\.).*")
     with open(filename, "r", encoding="utf-8") as f:
-        with open(filename+".bin", "w") as f2:
+        with open(r"C:\Users\sicom\Desktop\University\Arch\Project\Pipelined_Processor\Memory_Files\instruction_cache.mem", "w") as f2:
             # Headers for mem file
             f2.writelines(header[1:]+"\n")
             lines = iter(f.readlines())
             for line in lines:
                 if last_org and line[0].isdigit():
                     num_to_write = line.split("#")[0].strip()
+                    num_to_write = bin(int(num_to_write, 16))[2:]
                     outFileDict[line_number] = "0" * (16 - len(num_to_write)) + num_to_write + "\n"
                     line_number += 1
                     last_org = False
@@ -237,7 +238,7 @@ def assembly_to_binary(filename :str):
 
 
                 # start = '%04s: ' % str(hex(line_number))[2:]
-                outFileDict[line_number] =  str(int(lng)) + lineout + "XXX"*(4-c - rdst_missing) + "\n"
+                outFileDict[line_number] =  str(int(lng)) + lineout + "X"*(15- len(lineout)) + "\n"
                 if (lng):
                     line_number += 1
                     outFileDict[line_number] = "0" * (16 - len(line[-1])) + line[-1] + "\n"

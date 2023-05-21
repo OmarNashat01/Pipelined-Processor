@@ -21,9 +21,12 @@ ARCHITECTURE struct OF CPU IS
     -- PC
     SIGNAL pcAddressIn, pcAddressOut : STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL pcEnable : STD_LOGIC;
+    
 
     -- Instruction Cache
     SIGNAL instruction : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL addressOut, resetAddress, interruptAddress : STD_LOGIC_VECTOR(15 DOWNTO 0); 
+
 
     -- Fetch Buffer
     SIGNAL fetchBufferEnable : STD_LOGIC;
@@ -81,11 +84,15 @@ ARCHITECTURE struct OF CPU IS
     SIGNAL loadUseHazardFUOut : STD_LOGIC;
 
 BEGIN
-    pcEnable <= '1'; -- always enabled cuz no hazards 
+    -- pcEnable <= '1'; -- always enabled cuz no hazards 
+
+    pcAddressIn <= resetAddress WHEN reset = '1' ELSE
+                   interruptAddress WHEN interrupt = '1' ELSE
+                   addressOut;
+
     pcInst : ENTITY work.PC PORT MAP(
         clock => clock,
         enable => pcEnable,
-        reset => reset,
         addressIn => pcAddressIn,
         counter => pcAddressOut
     );
@@ -93,7 +100,9 @@ BEGIN
     icInst : ENTITY work.InstructionCache PORT MAP(
         readAddress => pcAddressOut,
         dataOut => instruction,
-        PCAddress => pcAddressIn
+        PCAddress => addressOut,
+        resetAddress => resetAddress,
+        interruptAddress => interruptAddress
     ); 
 
     -- Take 
@@ -102,7 +111,7 @@ BEGIN
     fetchBufferDataIn <= instruction(31 downto 16) & immediateValueOrIn;
 
     -- Always enabled cuz no hazards
-    fetchBufferEnable <= '1';
+    -- fetchBufferEnable <= '1';
     fetchBufferInst : ENTITY work.StageBuffer GENERIC MAP( n => 32 ) PORT MAP(
         clock => clock,
         reset => reset,
@@ -112,7 +121,7 @@ BEGIN
         dataOut => fetchBufferOut
     );
 
-    decoderEnable <= '1';
+    -- decoderEnable <= '1';
     decoderInst : ENTITY work.Decoder PORT MAP(
         enable => decoderEnable,
         opCode => fetchBufferOut(31 DOWNTO 26),
@@ -138,9 +147,9 @@ BEGIN
 
     -- 32-bit instruction (75 downto 44)
     -- 75 downto 70         69      68 downto 66  65 downto 63  62 downto 60  59 downto 44
-    -- 6 bits opCode, 1 bit unused, 3 bits Rsrc1, 3 bits Rsrc2, 3 bits Rdst, 16 bits Immediate
+    -- 6 bits opCode, 1 bit unused, 3 bits Rdst, 3 bits Rsrc1, 3 bits Rsrc2, 16 bits Immediate
     -- Always enabled cuz no hazards
-    decodeBufferEnable <= '1';
+    -- decodeBufferEnable <= '1';
     --     75 downto 44       43 downto 32    31 downto 16   15 downto 0
     -- (32bit instruction) (12bits signals) (16 dataout1)  (16 dataout2)
     decodeBufferDataIn <= (fetchBufferOut & decoderSignals & registerOut1 & registerOut2);
@@ -180,12 +189,12 @@ BEGIN
     );
 
     -- Always enabled cuz no hazards
-    executeBufferEnable <= '1';
+    -- executeBufferEnable <= '1';
     --    57     56 downto 54  53 downto 52      51     50   49  48  47 downto 32      31 downto 16        15 downto 0
     --(1bit IOR) (3bit Rdst) (2bit stackRW) (1bit IOW) MEMW MEMR WB (16bit aluOut) (16bit registerOut1) (16bit registerOut2)
     executeBufferDataIn <= (
             decodeBufferOut(36) &           -- IOR
-            decodeBufferOut(68 downto 66) & -- Rdst  --Ask Nashaat kanet (68 downto 66) bs keda ghlt??
+            decodeBufferOut(68 downto 66) & -- Rdst
             decodeBufferOut(41 downto 40) &
             decodeBufferOut(37) &
             decodeBufferOut(34 downto 32) &
@@ -211,12 +220,12 @@ BEGIN
         readAddress => executeBufferOut(31 downto 16),
        -- dataIn => executeBufferOut(47 downto 32),
         dataIn => executeBufferOut(15 downto 0),
-        dataOut => dataCacheDataOut 
+        dataOut => dataCacheDataOut
     );
 
 
     -- Always enabled cuz no hazards
-    dataCacheBuffer1Enable <= '1';
+    -- dataCacheBuffer1Enable <= '1';
     with executeBufferOut(49) select     -- MEMR
     dataOrAluOut <=
         dataCacheDataOut when '1',
@@ -249,7 +258,7 @@ BEGIN
         dataCacheBuffer1DataOut(20 downto 0);
     
     -- Always enabled cuz no hazards
-    dataCacheBuffer2Enable <= '1';
+    -- dataCacheBuffer2Enable <= '1';
     dataCacheBuffer2Inst: ENTITY work.StageBuffer GENERIC MAP( n => 22 ) PORT MAP(
         clock => clock,
         reset => reset,
@@ -261,8 +270,8 @@ BEGIN
 
     ForwardingUnitInst: ENTITY work.ForwardingUnit PORT MAP(
         clock => clock,
-        decode_rsrc1 => decodeBufferOut(68 downto 66),   --Check with Rana
-        decode_rsrc2 => decodeBufferOut(65 downto 63),   --Check with Rana
+        decode_rsrc1 => decodeBufferOut(68 downto 66),
+        decode_rsrc2 => decodeBufferOut(65 downto 63),
         execute_rdst => executeBufferOut(56 downto 54),
         mem1_rdst => dataCacheBuffer1DataOut(20 downto 18),
         mem2_rdst => dataCacheBuffer2DataOut(20 downto 18),
@@ -282,5 +291,19 @@ BEGIN
 
     outPort <= dataCacheBuffer2DataOut(15 downto 0);
 
+
+
+    HazardDetectionUnitInstance: ENTITY work.HDU PORT MAP(
+        clock => clock,
+        loadUseHazard => loadUseHazardFUOut,
+
+        PCEnable => pcEnable,
+
+        FetchBufferEnable => FetchBufferEnable,
+        DecodeBufferEnable => DecodeBufferEnable,
+        executeBufferEnable => executeBufferEnable,
+        Memory1BufferEnable => dataCacheBuffer1Enable,
+        Memory2BufferEnable => dataCacheBuffer2Enable
+    );
 
 END struct;

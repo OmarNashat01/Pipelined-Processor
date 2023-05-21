@@ -23,25 +23,27 @@ ENTITY DataCache IS
 END ENTITY;
 
 ARCHITECTURE sync_ram_a OF DataCache IS
-    TYPE ram_type IS ARRAY(0 TO 2 ** addressSize - 1) OF STD_LOGIC_VECTOR(ramWidth - 1 DOWNTO 0);
+    TYPE ram_type IS ARRAY(0 TO (2 ** addressSize)) OF STD_LOGIC_VECTOR(ramWidth - 1 DOWNTO 0);
     SIGNAL ram : ram_type;
-
+    SIGNAL stageBit : STD_LOGIC;
     -- TODO: CHECKKKKK IFF WORRKKSSS
-    SIGNAL stackPointer : STD_LOGIC_VECTOR(addressSize - 1 DOWNTO 0) := x"FFFE";
+    SIGNAL stackPointer : STD_LOGIC_VECTOR(addressSize - 1 DOWNTO 0) := x"FFFF";
 BEGIN
     PROCESS (clock)
-        VARIABLE stage : STD_LOGIC := '0'; --0 stage 0 , 1 stage 1
+        VARIABLE stage : Integer := 0; --0 stage 0 , 1 stage 1
     BEGIN
         IF falling_edge(clock) THEN
-            IF stage = '0' THEN
-                stage := '1';
+            IF stage = 0 THEN
+                IF MEMW = '1' OR MEMR = '1' THEN
+                    stage := to_integer(unsigned(stackRW));
+                END IF;
                 CASE stackRW IS
-                    WHEN "01" => -- push
+                    WHEN "10" => -- push
                         ram(to_integer(unsigned(stackPointer))) <= dataIn;
                         dataOut <= ram(to_integer(unsigned(readAddress)));
 
-                    WHEN "10" => -- pop
-                        dataOut <= ram(to_integer(unsigned(stackPointer)) - 1);
+                    WHEN "01" => -- pop
+                        dataOut <= ram(to_integer(unsigned(stackPointer)) + 1);
 
                     WHEN OTHERS => -- memory operations without stack
                         IF MEMW = '1' THEN
@@ -56,11 +58,10 @@ BEGIN
 
                 END CASE;
             ELSE
-                stage := '0';
-                CASE stackRW IS
-                    WHEN "01" =>
+                CASE stage IS
+                    WHEN 2 =>
                         stackPointer <= STD_LOGIC_VECTOR(to_unsigned(to_integer(unsigned(stackPointer) - 1), addressSize));
-                    WHEN "10" =>
+                    WHEN 1 =>
                         stackPointer <= STD_LOGIC_VECTOR(to_unsigned(to_integer(unsigned(stackPointer) + 1), addressSize));
 
                     -- Doesnt need to write it (default behaviour will latch)
@@ -69,6 +70,7 @@ BEGIN
                         stackPointer <= stackPointer;
                     
                 END CASE;
+                stage := 0;
             END IF;
         END IF;
     END PROCESS;

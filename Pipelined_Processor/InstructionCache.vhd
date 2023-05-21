@@ -10,6 +10,7 @@ ENTITY InstructionCache IS
     );
     PORT (
         readAddress : IN STD_LOGIC_VECTOR(addressSize - 1 DOWNTO 0);
+        resetAddress, interruptAddress : OUT STD_LOGIC_VECTOR(addressSize - 1 DOWNTO 0);
         dataOut : OUT STD_LOGIC_VECTOR(2 * ramWidth - 1 DOWNTO 0);
         PCAddress : OUT STD_LOGIC_VECTOR(addressSize - 1 DOWNTO 0)
     );
@@ -19,6 +20,9 @@ ARCHITECTURE sync_ram_a OF InstructionCache IS
     TYPE ram_type IS ARRAY(0 TO 2 ** addressSize - 1) OF STD_LOGIC_VECTOR(ramWidth - 1 DOWNTO 0);
     SIGNAL ram : ram_type;
 BEGIN
+    resetAddress <= ram(0);
+    interruptAddress <= ram(1);
+
     dataOut <= ram(to_integer(unsigned(readAddress))) & ram(to_integer(unsigned(readAddress)) + 1);
 
     -- increment PC by 1 if the instruction is 16 bits wide, otherwise increment by 2
