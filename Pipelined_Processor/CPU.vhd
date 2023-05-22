@@ -56,6 +56,9 @@ ARCHITECTURE struct OF CPU IS
 
     SIGNAL aluOperationSelector: STD_LOGIC_VECTOR(2 DOWNTO 0);
 
+    SIGNAL controlHazard: STD_LOGIC;
+    SIGNAL controlHazardAddress: STD_LOGIC_VECTOR(15 DOWNTO 0);
+
     -- Execute Buffer
     SIGNAL executeBufferEnable : STD_LOGIC;
     SIGNAL executeBufferOut : STD_LOGIC_VECTOR(57 DOWNTO 0);
@@ -82,12 +85,19 @@ ARCHITECTURE struct OF CPU IS
     SIGNAL Rsrc1DataFUOut : STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL Rsrc2DataFUOut : STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL loadUseHazardFUOut : STD_LOGIC;
+    
+
+
+
+    SIGNAL controlHazardHDU: STD_LOGIC;
+    SIGNAL controlHazardAddressHDU: STD_LOGIC_VECTOR(15 DOWNTO 0);
 
 BEGIN
     -- pcEnable <= '1'; -- always enabled cuz no hazards 
 
     pcAddressIn <= resetAddress WHEN reset = '1' ELSE
                    interruptAddress WHEN interrupt = '1' ELSE
+                   controlHazardAddressHDU WHEN controlHazardHDU = '1' ELSE
                    addressOut;
 
     pcInst : ENTITY work.PC PORT MAP(
@@ -96,6 +106,7 @@ BEGIN
         addressIn => pcAddressIn,
         counter => pcAddressOut
     );
+
 
     icInst : ENTITY work.InstructionCache PORT MAP(
         readAddress => pcAddressOut,
@@ -185,7 +196,11 @@ BEGIN
         opCode => aluOperationSelector,
         EX => decodeBufferOut(35),
         WALU => decodeBufferOut(39 downto 38), 
-        aluOut => aluOut
+        aluOut => aluOut,
+
+        pcJMP => decodeBufferOut(42),
+        controlHazard => controlHazard,
+        jumpAddress => controlHazardAddress
     );
 
     -- Always enabled cuz no hazards
@@ -296,6 +311,12 @@ BEGIN
     HazardDetectionUnitInstance: ENTITY work.HDU PORT MAP(
         clock => clock,
         loadUseHazard => loadUseHazardFUOut,
+
+        controlHazard => controlHazard,
+        controlHazardAddress => controlHazardAddress,
+
+        controlHazardHDU => controlHazardHDU,
+        controlHazardAddressHDU => controlHazardAddressHDU,
 
         MEMWR_DECODE => executeBufferDataIn(53 downto 52),
         MEMWR_EX => executeBufferOut(53 downto 52),

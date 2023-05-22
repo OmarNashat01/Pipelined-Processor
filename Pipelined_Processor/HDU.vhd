@@ -12,6 +12,12 @@ ENTITY HDU IS
         -- Structural Hazards
         MEMWR_DECODE, MEMWR_EX : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
 
+        -- Control Hazards
+        controlHazard : IN STD_LOGIC;
+        controlHazardAddress: IN STD_LOGIC_VECTOR(N-1 DOWNTO 0);
+
+        controlHazardHDU : OUT STD_LOGIC;
+        controlHazardAddressHDU : OUT STD_LOGIC_VECTOR(N-1 DOWNTO 0);
 
         -- Handling the PC
         PCEnable, PCReset : OUT STD_LOGIC;
@@ -52,6 +58,7 @@ BEGIN
     BEGIN
     IF falling_edge(clock) THEN
         IF loadUseHazard = '1' OR (unsigned(MEMWR_EX) > 0 AND unsigned(MEMWR_DECODE) > 0) THEN -- Data Hazard and Structural Hazard
+            controlHazardHDU <= '0';
             PCEnable <= '0';
             PCReset <= '0';
 
@@ -70,7 +77,31 @@ BEGIN
             Memory2BufferEnable <= '1';
             Memory2BufferReset <= '0';
         
+        ELSIF controlHazard = '1' THEN -- Control Hazard
+            controlHazardHDU <= '1';
+            controlHazardAddressHDU <= controlHazardAddress;
+
+            PCEnable <= '1';
+            PCReset <= '0';
+
+            FetchBufferEnable <= '0';
+            FetchBufferReset <= '1';
+
+            DecodeBufferEnable <= '0';
+            DecodeBufferReset <= '1';
+
+            ExecuteBufferEnable <= '1';
+            ExecuteBufferReset <= '0';
+
+            Memory1BufferEnable <= '1';
+            Memory1BufferReset <= '0';
+
+            Memory2BufferEnable <= '1';
+            Memory2BufferReset <= '0';            
+            
         ELSE -- No Hazard
+            controlHazardHDU <= '0';
+
             PCEnable <= '1';
             PCReset <= '0';
 

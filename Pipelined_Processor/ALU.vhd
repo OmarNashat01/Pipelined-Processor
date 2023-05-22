@@ -8,7 +8,11 @@ ENTITY ALU IS
         opCode : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
         EX : IN STD_LOGIC;
         WALU : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
-        aluOut : OUT STD_LOGIC_VECTOR(n - 1 DOWNTO 0)
+        aluOut : OUT STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
+
+        pcJMP : IN STD_LOGIC;
+        controlHazard : OUT STD_LOGIC;
+        jumpAddress : OUT STD_LOGIC_VECTOR(n - 1 DOWNTO 0)
     );
 END ENTITY;
 
@@ -72,5 +76,16 @@ BEGIN
     -- WITH EX SELECT flagRegister <=
     --     flagRegister_temp WHEN '1',
     --     flagRegister WHEN OTHERS;
+
+
+    -- Control Hazard
+    controlHazard <= '0' WHEN pcJMP = '0' ELSE
+                    '1' WHEN  opCode = "111" ELSE
+                    '1' WHEN opCode = "010" AND flagRegister(2) = '1' ELSE
+                    '1' WHEN opCode = "001" AND flagRegister(0) = '1' ELSE
+                    '0';
+    
+    -- Jump Address
+    jumpAddress <= src1;
 
 END struct;

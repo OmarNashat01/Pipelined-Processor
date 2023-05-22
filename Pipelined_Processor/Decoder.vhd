@@ -59,9 +59,7 @@ BEGIN
         opCode(5) & "00000100000" WHEN "110", -- OUT
         opCode(5) & "00000000000" WHEN "000", -- NOP
 
-        opCode(5) & "10000000000" WHEN "111", -- JMP
-
-        opCode(5) & "10000000000" WHEN OTHERS; -- JC, JZ
+        opCode(5) & "10000000000" WHEN OTHERS; -- JC (010), JZ (001), JMP (111)
 
     WITH opCode(4 DOWNTO 3) SELECT
     OutSignals <=

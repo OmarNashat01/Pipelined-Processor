@@ -27,7 +27,9 @@ INC R5,R5                 #R5 = FFFF, C--> 0, N --> 1, Z --> 0
 INC R5,R5                 #R5 = 0000, C--> 1, N --> 0, Z --> 1
 IN R1                        #R1= 0001 --> add 0001 on the in port, flags no change        
 IN R2                        #R2= 000F -> add 000F on the in port, flags no change        
-IN R3                        #R3= 00C8 -> add 00C8 on the in port, flags no change        
+IN R3                        #R3= 00C8 -> add 00C8 on the in port, flags no change  
+SETC
+JC R1
 IN R4                        #R4=001F -> add 001F on the in port, flags no change
 IN R5                        #R5=00FC -> add 00FC on the in port, flags no change
 ADD R1,R4,R5       #R1 = 0, C--> 0, N --> 0, Z --> 1
