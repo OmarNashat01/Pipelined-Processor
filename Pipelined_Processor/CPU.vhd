@@ -178,7 +178,7 @@ BEGIN
             decodeBufferOut(59 downto 44) when '1',
             Rsrc2DataAluIn when OTHERS;
 
-    aluOperationSelector <= decodeBufferOut(43) & decodeBufferOut(71 downto 70);
+    aluOperationSelector <=  decodeBufferOut(72 downto 70);
     aluInst: ENTITY work.ALU PORT MAP(
         src1 => Rsrc1DataAluIn,
         src2 => aluSecondOperand,
@@ -270,8 +270,8 @@ BEGIN
 
     ForwardingUnitInst: ENTITY work.ForwardingUnit PORT MAP(
         clock => clock,
-        decode_rsrc1 => decodeBufferOut(68 downto 66),
-        decode_rsrc2 => decodeBufferOut(65 downto 63),
+        decode_rsrc1 => decodeBufferOut(65 downto 63),--EDITTT
+        decode_rsrc2 => decodeBufferOut(62 downto 60),
         execute_rdst => executeBufferOut(56 downto 54),
         mem1_rdst => dataCacheBuffer1DataOut(20 downto 18),
         mem2_rdst => dataCacheBuffer2DataOut(20 downto 18),

@@ -15,6 +15,7 @@
 - OR
 - LDM
 - LDD
+- STD
 - RST
 - PUSH
 - POP
@@ -22,7 +23,6 @@
 - INT (load address only)
   
 # NOT DONE
-- STD
 
 - JZ
 - JC

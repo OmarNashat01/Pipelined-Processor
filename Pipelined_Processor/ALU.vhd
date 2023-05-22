@@ -47,6 +47,7 @@ BEGIN
         F_temp0 WHEN '0',
         F_temp1 WHEN OTHERS;
 
+
     -- Flags
     -- C
     WITH opCode(2) SELECT flagRegister_temp(2) <=
@@ -63,8 +64,13 @@ BEGIN
         '1' WHEN x"0000",
         '0' WHEN OTHERS;
 
-    WITH EX SELECT flagRegister <=
-        flagRegister_temp WHEN '1',
-        flagRegister WHEN OTHERS;
+
+    flagRegister <= 
+                WALU(0) & flagRegister(1 DOWNTO 0) WHEN WALU(1) = '1' ELSE
+                flagRegister_temp WHEN EX = '1' ELSE
+                flagRegister;
+    -- WITH EX SELECT flagRegister <=
+    --     flagRegister_temp WHEN '1',
+    --     flagRegister WHEN OTHERS;
 
 END struct;

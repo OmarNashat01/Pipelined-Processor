@@ -43,7 +43,7 @@ BEGIN
 
     Type2_Signals <=
         opCode(5) & -- LNG
-        opCode(0) & -- PCJMP
+        "0" & -- PCJMP
         (NOT opCode(2) AND opCode(1)) & -- DECSP
         opCode(2) & -- INCSP
         WALU_Type2 & -- WALU
@@ -57,9 +57,12 @@ BEGIN
         opCode(5) & "00011000000" WHEN "100", -- SETC
         opCode(5) & "00010000000" WHEN "101", -- CLRC
         opCode(5) & "00000100000" WHEN "110", -- OUT
-        opCode(5) & "10000000000" WHEN "111", -- RETS
+        opCode(5) & "00000000000" WHEN "000", -- NOP
 
-        opCode(5) & "00000000000" WHEN OTHERS; -- JC, JZ, NOP
+        opCode(5) & "10000000000" WHEN "111", -- JMP
+
+        opCode(5) & "10000000000" WHEN OTHERS; -- JC, JZ
+
     WITH opCode(4 DOWNTO 3) SELECT
     OutSignals <=
         Type0_Signals WHEN "00",
