@@ -30,9 +30,10 @@ IN R2                        #R2= 000F -> add 000F on the in port, flags no chan
 IN R3                        #R3= 00C8 -> add 00C8 on the in port, flags no change        
 IN R4                        #R4=001F -> add 001F on the in port, flags no change
 IN R5                        #R5=00FC -> add 00FC on the in port, flags no change
+PUSH R2
 PUSH R1
-NOP
-POP R3    
+POP R2 
+POP R1
 LDD R7, R1                      #R7 = M[200] = 001F    
 INC R7, R7                 
 NOP  

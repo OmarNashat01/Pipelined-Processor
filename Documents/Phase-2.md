@@ -15,14 +15,15 @@
 - OR
 - LDM
 - LDD
-- STD
 - RST
+- PUSH
+- POP
 
 - INT (load address only)
   
 # NOT DONE
-- PUSH
-- POP
+- STD
+
 - JZ
 - JC
 - JMP

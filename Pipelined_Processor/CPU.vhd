@@ -231,7 +231,7 @@ BEGIN
         dataCacheDataOut when '1',
         executeBufferOut(47 downto 32) when OTHERS;
     
-    --   23    22     21    20 downto 18    17         16    15 downto 0
+    --   23    22     21   20 downto 18    17        16    15 downto 0
     -- (IOR) (MEMW) (MEMR) (3bit Rdst) (1bit IOW) (1bit WB) (16bit out)
     dataCacheBuffer1DataIn <=
         executeBufferOut(57) &
@@ -296,6 +296,9 @@ BEGIN
     HazardDetectionUnitInstance: ENTITY work.HDU PORT MAP(
         clock => clock,
         loadUseHazard => loadUseHazardFUOut,
+
+        MEMWR_DECODE => executeBufferDataIn(53 downto 52),
+        MEMWR_EX => executeBufferOut(53 downto 52),
 
         PCEnable => pcEnable,
 
